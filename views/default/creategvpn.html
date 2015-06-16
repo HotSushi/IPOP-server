@@ -1,0 +1,70 @@
+{{extend 'layout.html'}}
+<script>
+var jids = []
+var jidpws = []
+var ips = []
+var jidhost = []
+
+function addlistitem(){
+    jid = $("#xmppidtxtbox").val()
+    jidp = $("#xmpppwtxtbox").val()
+    jidip = $("#xmppiptxtbox").val()
+    jidh = $("#xmpphtxtbox").val()
+    if(jids.indexOf(jid) == -1){
+        jids.push(jid)
+        jidpws.push(jidp)
+        jidhost.push(jidh)
+        ips.push(jidip)
+        $("#xmppjidlist").append( "<li>" + jid + "  :  " + jidp + "  :  " + jidip + "  :  " + jidh + "</li>")
+    }
+}
+
+function fillJid(){
+    var tempj=""
+    var tempp=""
+    var tempip=""
+    var temph=""
+
+    for (i=0;i<jids.length;i++){
+        tempj += jids[i] + " "
+        tempp += jidpws[i] + " "
+        tempip += ips[i] + " "
+        temph += jidhost[i] + " "
+    }
+    $("#xmppid").val(tempj.trim())
+    $("#xmpppw").val(tempp.trim())
+    $("#xmppip").val(tempip.trim())
+    $("#xmpphost").val(temph.trim())
+}
+</script>
+<h1>Create VPN</h1>
+<form action='{{=URL("put.json")}}' method="GET">
+    XMPP details required for security purpose:<br>
+    Admin JID: <input id="adminjid" name="adminjid" type="text" placeholder="ex. alice123@xmpp.jp" /><br>
+    Admin Password: <input id="adminjid" name="adminjid" type="password" placeholder="password" /><br><br>
+    VPN details:<br>
+    IPv4 Mask : <input id="subnet" name="subnet" type="text" placeholder="ex. 24" /><br>
+    IP Space : <input id="ipspace" name="ipspace" type="text" placeholder="ex. 192.168.10.0" /><br>
+    <input id="xmppid" name="xmppid" type="text" style="display: none;"/>
+    <input id="xmpppw" name="xmpppw" type="text" style="display: none;"/>
+    <input id="xmppip" name="nodeip" type="text" style="display: none;"/>
+    <input id="xmpphost" name="xmpphost" type="text" style="display: none;"/>
+    <br><br>
+    <h3>Add Nodes</h3>
+    <div id="addnodes">
+        <input id="xmppidtxtbox" type="text" placeholder="Enter XMPP JID" required/>
+        <input id="xmpppwtxtbox" type="text" placeholder="Enter XMPP password" required/>
+        <input id="xmpphtxtbox" type="text" placeholder="Enter XMPP host" required/>
+        <input id="xmppiptxtbox" type="text" placeholder="Enter IP of the node" required/>
+        <input type="button" value="Add Node" onclick="addlistitem()"/>
+        <br><br>
+        <h3>JID list:</h3>
+        <ul id="xmppjidlist" style="list-style-type:none">
+            <li><b>Xmpp JID  :  Password  :  IP  :  Xmpp Host</b></li>
+        </ul>
+    </div>
+
+    <input type="submit" value="Create" onclick="fillJid()"/>
+
+
+</form>

@@ -1,0 +1,8 @@
+errors/*
+databases/*
+*.bak
+*.pyc
+sessions/*
+*~
+models/db.py.1
+
