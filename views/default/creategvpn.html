@@ -41,10 +41,10 @@ function fillJid(){
 <form action='{{=URL("put.json")}}' method="GET">
     XMPP details required for security purpose:<br>
     Admin JID: <input id="adminjid" name="adminjid" type="text" placeholder="ex. alice123@xmpp.jp" /><br>
-    Admin Password: <input id="adminjid" name="adminjid" type="password" placeholder="password" /><br><br>
+    Admin Password: <input id="adminpw" name="adminpw" type="password" placeholder="password" /><br><br>
     VPN details:<br>
+    VPN Name :  <input id="vpnname" name="vpnname" type="text" placeholder="ex. Sushant" /><br>
     IPv4 Mask : <input id="subnet" name="subnet" type="text" placeholder="ex. 24" /><br>
-    IP Space : <input id="ipspace" name="ipspace" type="text" placeholder="ex. 192.168.10.0" /><br>
     <input id="xmppid" name="xmppid" type="text" style="display: none;"/>
     <input id="xmpppw" name="xmpppw" type="text" style="display: none;"/>
     <input id="xmppip" name="nodeip" type="text" style="display: none;"/>

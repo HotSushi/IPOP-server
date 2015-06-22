@@ -22,7 +22,7 @@ def index():
     if you need a simple wiki simply replace the two lines below with:
     return auth.wiki()
     """
-    return "hello world"
+    return dict()
 
 
 def user():
@@ -62,12 +62,13 @@ def creategvpn():
 
 def put():
     vars = request.get_vars
+    id = db.vpn.insert(vpn_name=vars['vpnname'],description="none",admin_jid=vars['adminjid'],admin_password=vars['adminpw'],ipv4_mask=vars['subnet'])
     xids = vars['xmppid'].split(" ")
     xidp = vars['xmpppw'].split(" ")
     nodeip = vars['nodeip'].split(" ")
     xidh = vars['xmpphost'].split(" ")
     for i in range(len(xids)):
-        db.xmpnode.insert(jid=xids[i],password=xidp[i],ip=nodeip[i],xmpp_host=xidh[i],vpn_name='sushant')
+        db.xmpnode.insert(jid=xids[i],password=xidp[i],ip=nodeip[i],xmpp_host=xidh[i],vpn_id=id)
     return dict(request.get_vars)
 
 def get():

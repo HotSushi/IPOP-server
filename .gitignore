@@ -5,4 +5,5 @@ databases/*
 sessions/*
 *~
 models/db.py.1
+progress.log
 
