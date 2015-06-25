@@ -34,10 +34,14 @@ class ServerXmppBot(ClientXMPP):
                 #add other messages here
                 pass
 
-            
-
     def get_client_pk(self, client):
             self.send_message(mto = client, mbody = 'get_key ')
+
+def init():
+    global instance
+    instance = ServerXmppBot('alice_sushant@xmpp.jp', 'alice123')
+    instance.connect()
+    instance.process(block=False)
 
 '''
 if __name__ == '__main__':

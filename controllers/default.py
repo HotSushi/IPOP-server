@@ -3,7 +3,7 @@
 import json
 import urllib
 import urllib2
-from serverxmpp import ServerXmppBot
+import serverxmpp
 
 from Crypto.PublicKey import RSA
 
@@ -22,6 +22,9 @@ def index():
     if you need a simple wiki simply replace the two lines below with:
     return auth.wiki()
     """
+    #Have to create LOGIN
+    serverxmpp.init()
+    serverxmpp.instance.add_callback('on_key_recvd',xmppbotCB)
     return dict()
 
 
@@ -60,6 +63,19 @@ def monitor():
 def creategvpn():
     return dict()
 
+def editgvpn():
+    json = {}
+    i = 0
+    for row in db(db.xmpnode).select():
+        i += 1
+        dic = {}
+        dic['jid'] = row.jid
+        dic['password'] = row.password
+        dic['xmpp_host'] = row.xmpp_host
+        dic['ip'] = row.ip
+        json[i] = dic
+    return dict(json = json)
+
 def put():
     vars = request.get_vars
     id = db.vpn.insert(vpn_name=vars['vpnname'],description="none",admin_jid=vars['adminjid'],admin_password=vars['adminpw'],ipv4_mask=vars['subnet'])
@@ -97,7 +113,10 @@ def get():
         enc_data = key.encrypt(config, 32)[0]
         return enc_data
     elif vars['type'] == 'getserverjid':
-        return 'alice_sushant@xmpp.jp'
+        xid = vars['xmppid']
+        vid = db(db.xmpnode.jid == xid).select()[0].vpn_id
+        adminxmpp = db.vpn[vid].admin_jid
+        return adminxmpp
 
 def set():
     vars = request.get_vars
@@ -109,14 +128,6 @@ def xmppbotCB(client, msg):
     a = urllib2.urlopen('http://127.0.0.1:8000/IPOP/default/set?'+data)
     print 'http://127.0.0.1:8000/IPOP/default/set?'+data
     return
-
-
-def xmppbot():
-    #change this to make it more general ask user to enter xmpp jid and pass
-    serverxmpp = ServerXmppBot('alice_sushant@xmpp.jp', 'alice123')
-    serverxmpp.connect()
-    serverxmpp.process(block=False)
-    serverxmpp.add_callback('on_key_recvd',xmppbotCB)
 
 def call():
     return service()

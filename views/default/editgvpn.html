@@ -1,0 +1,14 @@
+{{extend 'layout.html'}}
+<script>
+   function stopvpn(stringg){
+       alert(stringg)
+   }
+</script>
+<h1>Edit GVPN</h1>
+<h3>IP: Xmpp Id: Xmpp Password: Xmpp Host</h3>
+
+{{for i in range(1,len(json)+1):}}
+    {{= " : ".join(json[i].values()) }}
+    <button onclick="stopvpn( '{{=json[i]['jid']}}' )">Stop</button>
+    <br>
+{{pass}}
