@@ -14,5 +14,6 @@ db.define_table('xmpnode',
                 db.Field('ip', 'string', required=False),
                 db.Field('xmpp_host', 'string', required=False),
                 db.Field('vpn_id',  db.vpn),
+                db.Field('status', 'string', default=''),
                 db.Field('public_key','text')
                 )

@@ -73,6 +73,7 @@ def editgvpn():
         dic['password'] = row.password
         dic['xmpp_host'] = row.xmpp_host
         dic['ip'] = row.ip
+        dic['status'] = row.status
         json[i] = dic
     return dict(json = json)
 
@@ -120,10 +121,18 @@ def get():
 
 def set():
     vars = request.get_vars
-    db(db.xmpnode.jid == vars['xmppid']).update(public_key=vars['public_key'])
+    if(vars['type'] == 'set_public_key'):
+        db(db.xmpnode.jid == vars['xmppid']).update(public_key=vars['public_key'])
+    elif(vars['type'] == 'change_status'):
+        db(db.xmpnode.jid == vars['xmppid']).update(status=vars['status'])
+
+def sendtoclient():
+    vars = request.get_vars
+    if vars['type'] == 'stop':
+        serverxmpp.instance.stop_client(vars['xmppid'])
 
 def xmppbotCB(client, msg):
-    values = {'xmppid' : client,'public_key':msg}
+    values = {'type':'set_public_key','xmppid' : client,'public_key':msg}
     data = urllib.urlencode(values)
     a = urllib2.urlopen('http://127.0.0.1:8000/IPOP/default/set?'+data)
     print 'http://127.0.0.1:8000/IPOP/default/set?'+data

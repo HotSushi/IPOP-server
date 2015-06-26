@@ -1,14 +1,16 @@
 {{extend 'layout.html'}}
 <script>
    function stopvpn(stringg){
-       alert(stringg)
+       uri = "type=stop&xmppid="+stringg
+       var r = $.post( "http://127.0.0.1:8000{{=URL('sendtoclient')}}?"+encodeURI(uri));
    }
 </script>
 <h1>Edit GVPN</h1>
 <h3>IP: Xmpp Id: Xmpp Password: Xmpp Host</h3>
 
 {{for i in range(1,len(json)+1):}}
-    {{= " : ".join(json[i].values()) }}
+    {{= " : ".join(json[i].values()[1:]) }}
+<a style = " color:{{if json[i]['status'] == 'stopped':}}red {{else:}} green {{pass}}" > : {{=json[i]['status']}}</a>
     <button onclick="stopvpn( '{{=json[i]['jid']}}' )">Stop</button>
     <br>
 {{pass}}

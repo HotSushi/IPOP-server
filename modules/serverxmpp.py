@@ -35,7 +35,10 @@ class ServerXmppBot(ClientXMPP):
                 pass
 
     def get_client_pk(self, client):
-            self.send_message(mto = client, mbody = 'get_key ')
+        self.send_message(mto = client, mbody = 'get_key ')
+
+    def stop_client(self, client):
+        self.send_message(mto = client, mbody = 'stop_node ')
 
 def init():
     global instance
