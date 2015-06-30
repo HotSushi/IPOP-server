@@ -125,17 +125,22 @@ def set():
         db(db.xmpnode.jid == vars['xmppid']).update(public_key=vars['public_key'])
     elif(vars['type'] == 'change_status'):
         db(db.xmpnode.jid == vars['xmppid']).update(status=vars['status'])
+    elif(vars['type'] == 'change_ip'):
+        db(db.xmpnode.jid == vars['xmppid']).update(ip=vars['ip'])
 
 def sendtoclient():
     vars = request.get_vars
     if vars['type'] == 'stop':
         serverxmpp.instance.stop_client(vars['xmppid'])
+    elif vars['type'] == 'change_ip':
+        serverxmpp.instance.change_ip(vars['xmppid'])
 
 def xmppbotCB(client, msg):
     values = {'type':'set_public_key','xmppid' : client,'public_key':msg}
     data = urllib.urlencode(values)
-    a = urllib2.urlopen('http://127.0.0.1:8000/IPOP/default/set?'+data)
-    print 'http://127.0.0.1:8000/IPOP/default/set?'+data
+    #cannot access from non-web2py thread
+    a = urllib2.urlopen('http://localhost:8000/IPOP/default/set?'+data)
+    #print 'http://127.0.0.1:8000/IPOP/default/set?'+data
     return
 
 def call():

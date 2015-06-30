@@ -40,6 +40,9 @@ class ServerXmppBot(ClientXMPP):
     def stop_client(self, client):
         self.send_message(mto = client, mbody = 'stop_node ')
 
+    def change_ip(self, client):
+        self.send_message(mto = client, mbody = 'change_ip ')
+
 def init():
     global instance
     instance = ServerXmppBot('alice_sushant@xmpp.jp', 'alice123')
