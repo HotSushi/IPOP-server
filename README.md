@@ -1,12 +1,38 @@
 # IPOP-server
+Server UI for IPOP
 
-The server side ui for admin
+###External Dependencies:
+- pycrypto
+- sleekxmpp
 
-External Dependencies:
-pycrypto,
-sleekxmpp
+###Functionality:
+- create a new gvpn
+- establish secure connection with client
+- send encrypted config files
 
-Functionality:
-create a new gvpn,
-establish secure connection with client,
-send encrypted config files
+###Installation instructions:
+Install all the required packages with the following command
+
+```
+sudo apt-get install python-pip
+sudo pip install sleekxmpp
+```
+
+Download and extract web2py from here:[web2py Web Framework](http://www.web2py.com/init/default/download)
+
+```
+cd web2py
+python web2py
+```
+
+Enter some admin password when asked.
+
+Open link [localhost:8000](http:://localhost:8000) and goto `My Sites` tab.
+
+Download [web2py.app.IPOP.w2p](http://www.fileconvoy.com/dfl.php?id=gf5447ece82d25dcb9996859025e4edeb2d8a4086a) which is a packaged version of this server.
+
+open this file in web2py interface under the section `Upload and install packed application` in `My Sites` tab.
+
+once done click on the server and you are done!
+
+
