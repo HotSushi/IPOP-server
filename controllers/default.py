@@ -85,7 +85,7 @@ def put():
     nodeip = vars['nodeip'].split(" ")
     xidh = vars['xmpphost'].split(" ")
     for i in range(len(xids)):
-        db.xmpnode.insert(jid=xids[i],password=xidp[i],ip=nodeip[i],xmpp_host=xidh[i],vpn_id=id)
+        db.xmpnode.insert(jid=xids[i],password=xidp[i],ip=nodeip[i],xmpp_host=xidh[i],status="stopped",vpn_id=id)
     return dict(request.get_vars)
 
 def get():
