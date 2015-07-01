@@ -18,7 +18,7 @@ sudo apt-get install python-pip
 sudo pip install sleekxmpp
 ```
 
-Download and extract web2py from here:[web2py Web Framework](http://www.web2py.com/init/default/download)
+Download and extract web2py from here: [web2py Web Framework](http://www.web2py.com/init/default/download)
 
 ```
 cd web2py
@@ -27,9 +27,9 @@ python web2py
 
 Enter some admin password when asked.
 
-Open ['localhost:8000'](http://localhost:8000) and goto `My Sites` tab.
+Open [localhost:8000](http://localhost:8000) and goto `My Sites` tab.
 
-Download [web2py.app.IPOP.w2p](http://www.fileconvoy.com/dfl.php?id=gf5447ece82d25dcb9996859025e4edeb2d8a4086a) which is a packaged version of this server.
+Download [web2py.app.IPOP.w2p](http://www.fileconvoy.com/dfl.php?id=g80c4c172b0cc730899968591481edfb31577a778b) which is a packaged version of this server.
 
 open this file in web2py interface under the section `Upload and install packed application` in `My Sites` tab.
 
