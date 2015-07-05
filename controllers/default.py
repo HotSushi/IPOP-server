@@ -14,6 +14,7 @@ from Crypto.PublicKey import RSA
 ## - download is for downloading files uploaded in the db (does streaming)
 #########################################################################
 
+
 def index():
     """
     example action using the internationalization operator T and flash
@@ -24,13 +25,26 @@ def index():
     """
     #Have to create LOGIN
     serverxmpp.init()
-    #serverxmpp.instance.add_callback('on_key_recvd',xmppbotCB)
     return dict()
 
+def login():
+    form=FORM('Login:', BR(),INPUT(_name='name',_placeholder='Admin name',requires=IS_IN_DB(db,db.users.username)),BR(),
+        INPUT(_name='password',_type='password',_placeholder='Password',requires=IS_IN_DB(db,db.users.password)),BR(),
+        INPUT(_type='submit',_value='login'))
+    message = ''
+    #form = SQLFORM(db.users)
+    if form.validate():
+        session.logged_in_user = form.vars.name
+        redirect(URL(index))
+    elif form.errors:
+        form.errors.clear()
+        message = "Please enter a valid username"
+        session.logged_in_user = None # not necessary, but oh well
+        response.flash  = "Please enter a valid username"
+    return dict(form=form,message=message)
 
 def user():
     return dict(form=auth())
-
 
 @cache.action()
 def download():
@@ -141,14 +155,6 @@ def sendtoclient():
     elif vars['type'] == 'received_ack':
         serverxmpp.instance.send_key_ack(vars['xmppid'])
 
-
-def xmppbotCB(client, msg):
-    values = {'type':'set_public_key','xmppid' : client,'public_key':msg}
-    data = urllib.urlencode(values)
-    #cannot access from non-web2py thread
-    a = urllib2.urlopen('http://localhost:8000/IPOP/default/set?'+data)
-    #print 'http://127.0.0.1:8000/IPOP/default/set?'+data
-    return
 
 def call():
     return service()

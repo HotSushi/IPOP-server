@@ -4,6 +4,9 @@
     <title>IPOP</title>
     {{response.files.append(URL('static','css/skeleton.css'))}}
     {{include 'web2py_ajax.html'}}
+      {{if session.logged_in_user == None and request.function != 'login' :}}
+       {{ redirect(URL('login'))}}
+      {{pass}}
   </head>
   <body>
       <section id="main" class="container">

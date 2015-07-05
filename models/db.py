@@ -17,3 +17,8 @@ db.define_table('xmpnode',
                 db.Field('status', 'string', default=''),
                 db.Field('public_key','text')
                 )
+
+db.define_table('users',
+                db.Field('username','string',required=True),
+                db.Field('password','string',required=True)
+                )
