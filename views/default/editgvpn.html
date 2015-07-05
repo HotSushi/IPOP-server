@@ -15,12 +15,22 @@
    }
 </script>
 <h1>Edit GVPN</h1>
-<h3>IP: Xmpp Id: Xmpp Password: Xmpp Host</h3>
+
 
 {{for i in range(1,len(json)+1):}}
-    {{= " : ".join(json[i].values()[1:]) }}
-<a style = " color:{{if json[i]['status'] == 'stopped':}}red {{else:}} green {{pass}}" > : {{=json[i]['status']}}</a>
-    <button onclick="stopvpn( '{{=json[i]['jid']}}' )">Stop</button> : 
-    <button onclick="changeip( '{{=json[i]['jid']}}' )">Change IP</button>
-    <br>
+    <div>
+    <h2>{{=json[i]['vpn_name']}}</h2>
+    <h5>{{=json[i]['vpn_admin'] +":"+ json[i]['vpn_password'] +":"+ str(json[i]['vpn_ipv4mask']) }}</h5>
+    <h5>Nodes</h5>
+    {{ nodes = json[i]['nodes'] }}
+    {{ for j in range(1,len(nodes)+1): }}
+
+            {{= " : ".join(nodes[j].values()[1:]) }}
+            <a style = " color:{{if nodes[j]['status'] == 'stopped':}}red {{else:}} green {{pass}}" > : {{=nodes[j]['status']}}</a>
+            <button onclick="stopvpn( '{{= nodes[j]['jid'] }}' )">Stop</button> : 
+            <button onclick="changeip( '{{= nodes[j]['jid'] }}' )">Change IP</button>
+            <br>
+
+    {{pass}}
+    </div>
 {{pass}}

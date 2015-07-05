@@ -24,25 +24,11 @@ def index():
     """
     #Have to create LOGIN
     serverxmpp.init()
-    serverxmpp.instance.add_callback('on_key_recvd',xmppbotCB)
+    #serverxmpp.instance.add_callback('on_key_recvd',xmppbotCB)
     return dict()
 
 
 def user():
-    """
-    exposes:
-    http://..../[app]/default/user/login
-    http://..../[app]/default/user/logout
-    http://..../[app]/default/user/register
-    http://..../[app]/default/user/profile
-    http://..../[app]/default/user/retrieve_password
-    http://..../[app]/default/user/change_password
-    http://..../[app]/default/user/manage_users (requires membership in
-    use @auth.requires_login()
-        @auth.requires_membership('group name')
-        @auth.requires_permission('read','table name',record_id)
-    to decorate functions that need access control
-    """
     return dict(form=auth())
 
 
@@ -65,16 +51,29 @@ def creategvpn():
 
 def editgvpn():
     json = {}
-    i = 0
-    for row in db(db.xmpnode).select():
-        i += 1
-        dic = {}
-        dic['jid'] = row.jid
-        dic['password'] = row.password
-        dic['xmpp_host'] = row.xmpp_host
-        dic['ip'] = row.ip
-        dic['status'] = row.status
-        json[i] = dic
+    j = 0
+    for row_vpn in db(db.vpn).select():
+        j+=1
+        json_vpn = {}
+        json_vpn['vpn_name'] = row_vpn.vpn_name
+        json_vpn['vpn_description'] = row_vpn.description
+        json_vpn['vpn_admin'] = row_vpn.admin_jid
+        json_vpn['vpn_password'] = row_vpn.admin_password
+        json_vpn['vpn_ipv4mask'] = row_vpn.ipv4_mask
+        json_node = {}
+        i = 0
+        for row in db(db.xmpnode).select():
+            if row.vpn_id == row_vpn.id:
+                i += 1
+                dic = {}
+                dic['jid'] = row.jid
+                dic['password'] = row.password
+                dic['xmpp_host'] = row.xmpp_host
+                dic['ip'] = row.ip
+                dic['status'] = row.status
+                json_node[i] = dic
+        json_vpn['nodes'] = json_node
+        json[j]=json_vpn
     return dict(json = json)
 
 def put():
@@ -130,10 +129,18 @@ def set():
 
 def sendtoclient():
     vars = request.get_vars
+    #fix-this: a xmppid may have 2 or more admins (fix: pass vpn_id also)
+    #switch to respective admin
+    vid = db(db.xmpnode.jid == vars['xmppid']).select()[0].vpn_id
+    admin_jid,admin_password = db.vpn[vid].admin_jid,db.vpn[vid].admin_password
+    serverxmpp.change_instance(admin_jid,admin_password)
     if vars['type'] == 'stop':
         serverxmpp.instance.stop_client(vars['xmppid'])
     elif vars['type'] == 'change_ip':
         serverxmpp.instance.change_ip(vars['xmppid'])
+    elif vars['type'] == 'received_ack':
+        serverxmpp.instance.send_key_ack(vars['xmppid'])
+
 
 def xmppbotCB(client, msg):
     values = {'type':'set_public_key','xmppid' : client,'public_key':msg}
