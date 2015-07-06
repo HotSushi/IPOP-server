@@ -1,5 +1,5 @@
 {{extend 'layout.html'}}
-<meta http-equiv="refresh" content="10">
+
 <script>
    function stopvpn(stringg){
        uri = "type=stop&xmppid="+stringg
@@ -13,6 +13,23 @@
            $.post( "http://127.0.0.1:8000{{=URL('sendtoclient')}}?"+encodeURI(uri));
        }
    }
+
+   window.setInterval(reloader, 2000);
+   var json_file = null;
+   function reloader() {
+    $.getJSON("http://127.0.0.1:8000{{=URL('editgvpn.json')}}", function(result){
+        if(json_file == null){
+            json_file = JSON.stringify(result);
+        }
+        else{
+            if(json_file !== JSON.stringify(result)){
+                location.reload(true);
+                //<meta http-equiv="refresh" content="10">
+            }
+        }
+    });
+    }
+
 </script>
 <h1>Edit GVPN</h1>
 
