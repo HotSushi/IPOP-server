@@ -132,6 +132,46 @@ def get():
         adminxmpp = db.vpn[vid].admin_jid
         return adminxmpp
 
+def getgraph():
+    vars = request.get_vars
+    if len(vars) == 0:
+        return dict()
+    #get nodes in the vpn
+    vid = vars['vpnid']
+    vpn_nodes= db(db.xmpnode.vpn_id == vid).select()
+    #get all xmpp hosts
+    xmpphostarray = []
+    for node in vpn_nodes:
+        if node.xmpp_host not in xmpphostarray:
+            xmpphostarray.append(node.xmpp_host) 
+    #set up node and Links
+    Nodes = []
+    Links = []
+    for xh in xmpphostarray:
+        each_node = {}
+        each_node['name']=xh
+        each_node['password']=''
+        each_node['ip']=''
+        each_node['group']=2
+        Nodes.append(each_node)
+    for node in vpn_nodes:
+        each_node = {}
+        each_link = {} 
+        each_node['name']=node.jid
+        each_node['password']=node.password
+        each_node['ip']=node.ip
+        each_node['group']=1
+        each_link["source"]=len(Nodes)
+        each_link["target"]=xmpphostarray.index(node.xmpp_host)
+        Nodes.append(each_node)
+        Links.append(each_link)
+    json = {}
+    json["nodes"]=Nodes
+    json["links"]=Links
+    
+    return json
+        
+
 def set():
     vars = request.get_vars
     if(vars['type'] == 'set_public_key'):
