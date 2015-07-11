@@ -18,6 +18,11 @@ db.define_table('xmpnode',
                 db.Field('public_key','text')
                 )
 
+db.define_table('logs',
+               db.Field('name','string'),
+               db.Field('log','text', default='')
+               )
+
 db.define_table('users',
                 db.Field('username','string',required=True),
                 db.Field('password','string',required=True)
