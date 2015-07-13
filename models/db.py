@@ -19,9 +19,10 @@ db.define_table('xmpnode',
                 )
 
 db.define_table('logs',
-               db.Field('name','string'),
-               db.Field('log','text', default='')
-               )
+                db.Field('node','string'),
+                db.Field('name','string'),
+                db.Field('log','text', default='')
+                )
 
 db.define_table('users',
                 db.Field('username','string',required=True),

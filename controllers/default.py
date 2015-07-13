@@ -173,18 +173,26 @@ def getgraph():
 def log():
     vars = request.get_vars
     if vars['type'] == 'set':
-        select_list = db(db.logs.name == vars['name']).select()
+        select_list = db((db.logs.node == vars['node'])&(db.logs.name == vars['name'])).select()
         if len(select_list) ==0:
-            db.logs.insert(name = vars['name'],log = vars['log'])
+            db.logs.insert(node = vars['node'], name = vars['name'],log = vars['log'])
         else:
             existing_log = select_list[0]['log']
-            db(db.logs.name == vars['name']).update(log = vars['log'] + existing_log)
+            db((db.logs.node == vars['node'])&(db.logs.name == vars['name'])).update(log = vars['log'] + existing_log)
         return 'success'
+    elif vars['type'] == 'del':
+        pass
     else:
-        select_list = db(db.logs.name == vars['name']).select()
+        select_list = db(db.logs.node == vars['node']).select()
         if len(select_list) ==0:
-            return 'empty'
-        return dict(log = select_list[0]['log'])
+            return dict(json ='')
+        else:
+            if vars['name']:
+                for entry in select_list:
+                    if entry.name == vars['name']:
+                        return dict(json = [entry])
+                return dict(json = '')
+        return dict(json = select_list)
         
 
 def set():

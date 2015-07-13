@@ -1,0 +1,13 @@
+{{extend 'layout.html'}}
+<h1>{{=request.get_vars['node']}}</h1>
+{{if not json:}}
+    <h3> Could not fetch Log file</h3>
+{{else:}}
+    {{for each_log in json:}}
+        <h3>{{=each_log.name}}</h3>
+        <textarea class="log" cols="200" id="logs_log" name="log" rows="50" readonly>
+        {{=each_log.log}}
+        </textarea>
+        <br>
+    {{pass}}    
+{{pass}}
