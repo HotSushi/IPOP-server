@@ -28,3 +28,7 @@ db.define_table('users',
                 db.Field('username','string',required=True),
                 db.Field('password','string',required=True)
                 )
+
+#add default username password
+if len(db(db.users).select()) == 0:
+    db.users.insert(username='user',password='password')
