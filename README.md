@@ -16,6 +16,7 @@ Install all the required packages with the following command
 ```
 sudo apt-get install python-pip
 sudo pip install sleekxmpp
+sudo pip install pycrypto
 ```
 
 Download and extract web2py from here: [web2py Web Framework](http://www.web2py.com/init/default/download)
