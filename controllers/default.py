@@ -69,6 +69,7 @@ def editgvpn():
     for row_vpn in db(db.vpn).select():
         j+=1
         json_vpn = {}
+        json_vpn['vpn_id'] = row_vpn.id
         json_vpn['vpn_name'] = row_vpn.vpn_name
         json_vpn['vpn_description'] = row_vpn.description
         json_vpn['vpn_admin'] = row_vpn.admin_jid

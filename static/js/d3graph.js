@@ -8,13 +8,38 @@ How to use:
           alert(d.name);
       }
 */
+/* SAMPLE HTML FILE
 
+{{extend 'layout.html'}}
+<link rel="stylesheet" type="text/css" href="/IPOP/static/css/d3graph.css">
+<script src="/IPOP/static/js/d3graph.js"></script>
+<script src="/IPOP/static/js/d3.min.js"></script>
+<script src="/IPOP/static/js/d3.tip.v0.6.3.js"></script>
+
+<script>
+    $.getJSON("http://127.0.0.1:8000{{=URL('getgraph.json?vpnid=1')}}", function(result){
+        creategraph(result,"#networkmap");
+    });
+    $.getJSON("http://127.0.0.1:8000{{=URL('getgraph.json?vpnid=2')}}", function(result){
+        creategraph(result,"#networkmap2");
+    });
+    function ongraphclick(d) {
+          if (d3.event.defaultPrevented) return; // ignore drag
+          alert(d.name);
+      }
+</script>
+<div id="networkmap"></div>
+<div id="networkmap2"></div>
+
+
+
+*/
 //var graphdata;
 
 function creategraph(graphdata,selector){
      //Constants for the SVG
-    var width = 500,
-        height = 500;
+    var width = 560,
+        height = 320;
 
     //Set up the colour scale
     var color = d3.scale.category20();
@@ -22,7 +47,7 @@ function creategraph(graphdata,selector){
     //Set up the force layout
     var force = d3.layout.force()
         .charge(-600)
-        .linkDistance(80)
+        .linkDistance(100)
         .size([width, height]);
 
     //Append a SVG to the body of the html page. Assign this SVG as an object to svg
@@ -64,7 +89,7 @@ function creategraph(graphdata,selector){
         .on('mouseout', tip.hide);
 
     node.append("circle")
-        .attr("r", 12)
+        .attr("r", 15)
         .style("fill", function (d) {
         return color(d.group);
     })

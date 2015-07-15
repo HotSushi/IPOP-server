@@ -1380,3 +1380,12 @@
 [2015-07-11 21:33:17] EDIT IPOP/models/db.py: 0
 [2015-07-11 21:36:17] EDIT IPOP/models/db.py: 0
 [2015-07-11 21:36:19] EDIT IPOP/models/db.py: 0
+[2015-07-12 21:24:35] EDIT IPOP/models/db.py: 1
+[2015-07-12 21:25:25] EDIT IPOP/controllers/default.py: 0
+[2015-07-12 21:27:19] EDIT IPOP/controllers/default.py: 0
+[2015-07-12 21:27:23] EDIT IPOP/controllers/default.py: 0
+[2015-07-12 21:27:49] EDIT IPOP/controllers/default.py: 0
+[2015-07-12 21:28:34] EDIT IPOP/controllers/default.py: 0
+[2015-07-12 21:28:56] EDIT IPOP/controllers/default.py: 0
+[2015-07-13 23:52:28] CREATE default/log.html: 0
+[2015-07-14 00:43:58] DELETE IPOP/views/default/getgraph.html: -19

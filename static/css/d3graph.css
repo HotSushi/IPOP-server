@@ -12,10 +12,11 @@
   stroke: #000;
   stroke-width: 1px;
   pointer-events: none;
-  font: 10px sans-serif;
+  font: 15px sans-serif;
 }
 
 .d3-tip {
     line-height: 1;
     color: black;
+    font: 10px sans-serif;
 }
