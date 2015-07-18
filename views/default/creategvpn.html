@@ -50,12 +50,13 @@ function fillJid(){
     <input id="xmppip" name="nodeip" type="text" style="display: none;"/>
     <input id="xmpphost" name="xmpphost" type="text" style="display: none;"/>
     <br><br>
-    <h3>Add Nodes</h3>
+
+    <h3>Add Nodes One by one</h3>
     <div id="addnodes">
-        <input id="xmppidtxtbox" type="text" placeholder="Enter XMPP JID" required/>
-        <input id="xmpppwtxtbox" type="text" placeholder="Enter XMPP password" required/>
-        <input id="xmpphtxtbox" type="text" placeholder="Enter XMPP host" required/>
-        <input id="xmppiptxtbox" type="text" placeholder="Enter IP of the node" required/>
+        <input id="xmppidtxtbox" type="text" placeholder="Enter XMPP JID" />
+        <input id="xmpppwtxtbox" type="text" placeholder="Enter XMPP password" />
+        <input id="xmpphtxtbox" type="text" placeholder="Enter XMPP host" />
+        <input id="xmppiptxtbox" type="text" placeholder="Enter IP of the node" />
         <input type="button" value="Add Node" onclick="addlistitem()"/>
         <br><br>
         <h3>JID list:</h3>
@@ -64,7 +65,14 @@ function fillJid(){
         </ul>
     </div>
 
+    <br><br>
+    <h3>Add Nodes in bulk</h3>
+    <p>this requires ejabberd server as xmpp host, relationships and configuration files will be automatically generated</p>
+    <div id="addbulknodes">
+        <input id="no_of_nodes" name="no_of_nodes" type="number" placeholder="No of nodes" />
+    </div>    
+
     <input type="submit" value="Create" onclick="fillJid()"/>
-
-
 </form>
+
+

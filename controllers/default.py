@@ -4,6 +4,7 @@ import json
 import urllib
 import urllib2
 import serverxmpp
+import gvpnconfig
 
 from Crypto.PublicKey import RSA
 
@@ -132,6 +133,41 @@ def get():
         vid = db(db.xmpnode.jid == xid).select()[0].vpn_id
         adminxmpp = db.vpn[vid].admin_jid
         return adminxmpp
+
+def register_relationships():
+    vars = request.get_vars
+    response_ob = {}
+    xmpp_host,no_of_nodes,vpn_name,ip,ipv4mask = vars['xmpp_host'],vars['no_of_nodes'], vars['vpnname'], vars['ip4'], vars['subnet']
+
+    for ele in [xmpp_host,no_of_nodes,vpn_name,ip,ipv4mask]:
+        if not ele :
+            response_ob['return_code'] = 2
+            response_ob['msg'] = 'Some arguments were not passed'
+            return dict(json =response_ob)
+    try:
+        instructions,config = gvpnconfig.getConfScript(ip,ipv4mask,vpn_name,xmpp_host,no_of_nodes)
+    except OSError as er:
+        response_ob['return_code'] = 2
+        response_ob['msg'] = str(er)
+        return dict(json =response_ob)
+    for each_config in config:
+        ip_match = db(db.xmpnode.ip == each_config['ip4'] ).select()
+        if len(ip_match)>0:
+            response_ob['return_code'] = 2
+            response_ob['msg'] = "The IP "+ip_match[0]['ip']+" is already engaged in the db"
+            return dict(json =response_ob)
+    try:
+        resp = gvpnconfig.send_ejabberd(xmpp_host,instructions)
+    except OSError as er:
+        response_ob['return_code'] = 2
+        response_ob['msg'] = str(er)
+        return dict(json =response_ob)
+
+    response_ob['return_code'] = 0
+    response_ob['msg'] = resp              
+    return dict(json=response_ob)
+
+
 
 def getgraph():
     vars = request.get_vars
