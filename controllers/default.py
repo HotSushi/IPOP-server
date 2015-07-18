@@ -163,9 +163,8 @@ def register_relationships():
         response_ob['msg'] = str(er)
         return dict(json =response_ob)
 
-    response_ob['return_code'] = 0
-    response_ob['msg'] = resp              
-    return dict(json=response_ob)
+    resp = json.loads(resp)
+    return dict(json=resp)
 
 
 

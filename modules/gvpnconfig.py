@@ -5,10 +5,11 @@ import urllib2
 
 #throws OSError
 def getConfScript(ip,ip4mask,name,ejabberd_ip,no_of_nodes):
+    #fix-this = 'is ejabberd_ip necessary'
     if no_of_nodes == 0:
         return ''
     ipplusmask = ip+'/'+ip4mask
-    args = ['groupvpn-config','--ip-network',ipplusmask,name,ejabberd_ip,no_of_nodes]
+    args = ['groupvpn-config','--ip-network',ipplusmask,name,'ejabberd',no_of_nodes]
     try:
         result = subprocess.check_output(args, stderr=subprocess.STDOUT)
     except OSError as e:
