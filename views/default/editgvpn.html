@@ -10,6 +10,10 @@
           uri = "node="+d.name;
           window.location = "http://127.0.0.1:8000{{=URL('log')}}?"+encodeURI(uri);
     }
+    function delet(stringg){
+       uri = "jids="+stringg;
+       var r = $.get( "http://127.0.0.1:8000{{=URL('delet')}}?"+encodeURI(uri));
+   }
    function stopvpn(stringg){
        uri = "type=stop&xmppid="+stringg;
        var r = $.post( "http://127.0.0.1:8000{{=URL('sendtoclient')}}?"+encodeURI(uri));
@@ -62,7 +66,8 @@
             {{= " : ".join(nodes[j].values()[1:]) }}
             <a style = " color:{{if nodes[j]['status'] == 'stopped':}}red {{else:}} green {{pass}}" > : {{=nodes[j]['status']}}</a>
             <button onclick="stopvpn( '{{= nodes[j]['jid'] }}' )">Stop</button> : 
-            <button onclick="changeip( '{{= nodes[j]['jid'] }}' )">Change IP</button>
+            <button onclick="changeip( '{{= nodes[j]['jid'] }}' )">Change IP</button>:
+            <button onclick="delet( '{{= nodes[j]['jid'] }}' )">Delete node</button>
             <br>
 
     {{pass}}

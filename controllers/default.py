@@ -94,7 +94,7 @@ def editgvpn():
 
 def put():
     vars = request.get_vars
-    id = db.vpn.insert(vpn_name=vars['vpnname'],description="none",admin_jid=vars['adminjid'],admin_password=vars['adminpw'],ipv4_mask=vars['subnet'])
+    id = db.vpn.insert(vpn_name=vars['vpnname'],description="none",admin_jid=vars['adminjid'],admin_password=vars['adminpw'],ipv4_mask=vars['subnet'],ejabberd_password=vars['xmpp_host_password'])
     xids = vars['xmppid'].split(" ")
     xidp = vars['xmpppw'].split(" ")
     nodeip = vars['nodeip'].split(" ")
@@ -116,6 +116,7 @@ def delet():
         data['xmpp_host'] = query_result[0].xmpp_host
         #if ejabberd_password is empty, implies non-ejabberd server 
         if ejabberd_password != '':
+            data['xmpp_host_password'] = ejabberd_password
             response = urllib2.urlopen('http://127.0.0.1:8000%s?%s'%(URL('unregister_relationship.json'),urllib.urlencode(data)))
             response = json.loads(response.read())
             if response['json']['return_code'] == 2:
@@ -161,9 +162,8 @@ def get():
 def register_relationships():
     vars = request.get_vars
     response_ob = {}
-    xmpp_host,no_of_nodes,vpn_name,ip,ipv4mask = vars['xmpp_host'],vars['no_of_nodes'], vars['vpnname'], vars['ip4'], vars['subnet']
-
-    for ele in [xmpp_host,no_of_nodes,vpn_name,ip,ipv4mask]:
+    xmpp_host,xmpp_host_password,no_of_nodes,vpn_name,ip,ipv4mask = vars['xmpp_host'],vars['xmpp_host_password'],vars['no_of_nodes'], vars['vpnname'], vars['ip4'], vars['subnet']
+    for ele in [xmpp_host,no_of_nodes,vpn_name,ip,ipv4mask,xmpp_host_password]:
         if not ele :
             response_ob['return_code'] = 2
             response_ob['msg'] = 'Some arguments were not passed'
@@ -181,24 +181,37 @@ def register_relationships():
             response_ob['msg'] = "The IP "+ip_match[0]['ip']+" is already engaged in the db"
             return dict(json =response_ob)
     try:
-        resp = gvpnconfig.send_ejabberd(xmpp_host,instructions)
+        resp = gvpnconfig.send_ejabberd(xmpp_host,instructions,xmpp_host_password)
     except OSError as er:
         response_ob['return_code'] = 2
         response_ob['msg'] = str(er)
         return dict(json =response_ob)
-
+    
+    #FIX-THIS = dependent on front end
+    node_list = []
+    for each_config in config:
+        node = {}
+        node['xmpp_username'] = each_config['xmpp_username']
+        node['xmpp_password'] = each_config['xmpp_password']
+        node['xmpp_host'] = vars['xmpp_host']
+        node['ip4'] = each_config['ip4']
+        node_list.append(node)
+    
     resp = json.loads(resp)
+    resp['nodes'] = node_list
     return dict(json=resp)
+
 
 #handles single ejabberd node delete
 def unregister_relationship():
     vars = request.get_vars
     jid = vars['jid']
     xmpp_host = vars['xmpp_host']
+    xmpp_host_password = vars['xmpp_host_password']
     #user@ejabberd => user ejabberd
     instruction = "ejabberdctl unregister %s"%(jid.replace('@',' '))
     try:
-        resp = gvpnconfig.send_ejabberd(xmpp_host,instruction,delet = 1)
+        resp = gvpnconfig.send_ejabberd(xmpp_host,instruction,xmpp_host_password,delet = 1)
     except OSError as er:
         return dict(json={'return_code':2,'msg':str(er)})
     resp = json.loads(resp)

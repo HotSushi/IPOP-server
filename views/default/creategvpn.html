@@ -36,6 +36,32 @@ function fillJid(){
     $("#xmppip").val(tempip.trim())
     $("#xmpphost").val(temph.trim())
 }
+function register_ejabberd(){
+    data = {
+        no_of_nodes:$('#no_of_nodes').val(),
+        xmpp_host:$('#xmpp_host').val(),
+        ip4:$('#ip4').val(),
+        vpnname:$('#vpnname').val(),
+        subnet:$('#subnet').val(),
+        xmpp_host_password:$('#xmpp_host_password').val()
+    }
+    $.getJSON("http://127.0.0.1:8000{{=URL('register_relationships.json')}}", data,function(result){
+        if (result.json.return_code != 0){
+             alert("Error:"+result.json.msg);
+        }
+        else{
+            for (i=0;i<result.json.nodes.length;i++){
+                var node = result.json.nodes[i];
+                $("#xmppidtxtbox").val(node.xmpp_username);
+                $("#xmpppwtxtbox").val(node.xmpp_password);
+                $("#xmppiptxtbox").val(node.ip4);
+                $("#xmpphtxtbox").val(node.xmpp_host);
+                addlistitem()
+            }
+        $("#xmppidtxtbox").val("");$("#xmpppwtxtbox").val("");$("#xmppiptxtbox").val("");$("#xmpphtxtbox").val("");
+        }
+    });
+    }
 </script>
 <h1>Create VPN</h1>
 <form action='{{=URL("put.json")}}' method="GET">
@@ -59,20 +85,25 @@ function fillJid(){
         <input id="xmppiptxtbox" type="text" placeholder="Enter IP of the node" />
         <input type="button" value="Add Node" onclick="addlistitem()"/>
         <br><br>
-        <h3>JID list:</h3>
-        <ul id="xmppjidlist" style="list-style-type:none">
-            <li><b>Xmpp JID  :  Password  :  IP  :  Xmpp Host</b></li>
-        </ul>
+        
     </div>
 
     <br><br>
     <h3>Add Nodes in bulk</h3>
     <p>this requires ejabberd server as xmpp host, relationships and configuration files will be automatically generated</p>
     <div id="addbulknodes">
-        <input id="no_of_nodes" name="no_of_nodes" type="number" placeholder="No of nodes" />
+        <input id="no_of_nodes" name="no_of_nodes" type="number" min="1" step="1" placeholder="No of nodes" />
+        <input id="xmpp_host" name="xmpp_host" type="text" placeholder="IP of ejabberd server" />
+        <input id="xmpp_host_password" name="xmpp_host_password" type="password" placeholder="xmpp host sudo password"/>
+        <input id="ip4" name="ip4" type="text" placeholder="IP space for IPOP nodes" />
+        <input type="button" value="Generate" onclick="register_ejabberd()">
     </div>    
+
+    <h3>JID list:</h3>
+        <ul id="xmppjidlist" style="list-style-type:none">
+            <li><b>Xmpp JID  :  Password  :  IP  :  Xmpp Host</b></li>
+        </ul>
 
     <input type="submit" value="Create" onclick="fillJid()"/>
 </form>
-
 
