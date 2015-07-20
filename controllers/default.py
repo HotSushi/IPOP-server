@@ -103,6 +103,26 @@ def put():
         db.xmpnode.insert(jid=xids[i],password=xidp[i],ip=nodeip[i],xmpp_host=xidh[i],status="stopped",vpn_id=id)
     return dict(request.get_vars)
 
+def delet():
+    vars = request.get_vars
+    jids = vars['jids'].split()
+    for jid in jids:
+        data = {}
+        query_result = db(db.xmpnode.jid == jid).select()
+        if len(query_result) == 0:
+            return dict(json={'return_code':2,'msg':'Node '+jid+' doesn\'t exist in db'})
+        data['jid'] = jid
+        data['xmpp_host'] = query_result[0].xmpp_host
+        response = urllib2.urlopen('http://127.0.0.1:8000%s?%s'%(URL('unregister_relationship.json'),urllib.urlencode(data)))
+        response = json.loads(response.read())
+        if response['json']['return_code'] == 2:
+            #if its non-ejabberd server,ignore
+            if response['json']['msg'] != "The ipop-ejabberd server is not running":
+                return dict(json=response['json'])
+        db(db.xmpnode.jid == jid).delete()
+    return dict(json={'return_code':0,'msg':'successfully deleted'})
+
+
 def get():
     vars = request.get_vars
     if len(vars) == 0:
@@ -134,6 +154,7 @@ def get():
         adminxmpp = db.vpn[vid].admin_jid
         return adminxmpp
 
+#handles multiple ejabberd node insert and response
 def register_relationships():
     vars = request.get_vars
     response_ob = {}
@@ -166,6 +187,19 @@ def register_relationships():
     resp = json.loads(resp)
     return dict(json=resp)
 
+#handles single ejabberd node delete
+def unregister_relationship():
+    vars = request.get_vars
+    jid = vars['jid']
+    xmpp_host = vars['xmpp_host']
+    instruction = "ejabberdctl unregister %s"%(jid.replace('@',' '))
+    try:
+        #xmpp_host = query_result[0].xmpp_host
+        resp = gvpnconfig.send_ejabberd(xmpp_host,instruction,delet = 1)
+    except OSError as er:
+        return dict(json={'return_code':2,'msg':str(er)})
+    resp = json.loads(resp)
+    return dict(json=resp)
 
 
 def getgraph():

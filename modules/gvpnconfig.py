@@ -31,15 +31,21 @@ def getConfJsonFromString(blob):
         next_cb = blob.find('}')
     return AR
 
-def send_ejabberd(hostip,data):
+def send_ejabberd(hostip,data,delet=0):
     values = {'cmd':data,'pw' : 'adminuser'}
     data = urllib.urlencode(values)
     try:
-        response = urllib2.urlopen('http://%s:7000/cgit.py?%s'%(hostip,data))
+        if delet == 0:
+            response = urllib2.urlopen('http://%s:7000/cgit.py?%s'%(hostip,data) , timeout = 3)
+        elif delet == 1:
+            response = urllib2.urlopen('http://%s:7000/cgitd.py?%s'%(hostip,data) , timeout = 3)
     except urllib2.HTTPError, e:
         raise OSError('There is some problem in the ipop-ejabberd server')
     except urllib2.URLError, e:
         raise OSError('The ipop-ejabberd server is not running')
     return response.read()
+
+
+
 #t =  getConfScript('123.31.0.0','21','vpnname','145.3.2.1','2')
 #print t
