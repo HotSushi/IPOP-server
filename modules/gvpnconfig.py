@@ -31,14 +31,14 @@ def getConfJsonFromString(blob):
         next_cb = blob.find('}')
     return AR
 
-def send_ejabberd(hostip,data,delet=0):
-    values = {'cmd':data,'pw' : 'adminuser'}
+def send_ejabberd(hostip,data,password,delet=0):
+    values = {'cmd':data,'pw' : password}
     data = urllib.urlencode(values)
     try:
         if delet == 0:
-            response = urllib2.urlopen('http://%s:7000/cgit.py?%s'%(hostip,data) , timeout = 3)
+            response = urllib2.urlopen('http://%s:7000/create.py?%s'%(hostip,data) , timeout = 3)
         elif delet == 1:
-            response = urllib2.urlopen('http://%s:7000/cgitd.py?%s'%(hostip,data) , timeout = 3)
+            response = urllib2.urlopen('http://%s:7000/delete.py?%s'%(hostip,data) , timeout = 3)
     except urllib2.HTTPError, e:
         raise OSError('There is some problem in the ipop-ejabberd server')
     except urllib2.URLError, e:

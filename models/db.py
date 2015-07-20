@@ -6,7 +6,7 @@ db.define_table('vpn',
                 db.Field('admin_jid', 'string', required=False ),
                 db.Field('admin_password', 'string', required=False ),
                 db.Field('ipv4_mask', 'integer', required=False),
-                db.Field('ejabberd_pw','string', required=False)
+                db.Field('ejabberd_password','string', required=False, default='')
                 )
 
 db.define_table('xmpnode',

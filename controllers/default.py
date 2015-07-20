@@ -111,14 +111,17 @@ def delet():
         query_result = db(db.xmpnode.jid == jid).select()
         if len(query_result) == 0:
             return dict(json={'return_code':2,'msg':'Node '+jid+' doesn\'t exist in db'})
+        ejabberd_password = db(db.vpn.id == query_result[0].vpn_id).select()[0].ejabberd_password
         data['jid'] = jid
         data['xmpp_host'] = query_result[0].xmpp_host
-        response = urllib2.urlopen('http://127.0.0.1:8000%s?%s'%(URL('unregister_relationship.json'),urllib.urlencode(data)))
-        response = json.loads(response.read())
-        if response['json']['return_code'] == 2:
-            #if its non-ejabberd server,ignore
-            if response['json']['msg'] != "The ipop-ejabberd server is not running":
-                return dict(json=response['json'])
+        #if ejabberd_password is empty, implies non-ejabberd server 
+        if ejabberd_password != '':
+            response = urllib2.urlopen('http://127.0.0.1:8000%s?%s'%(URL('unregister_relationship.json'),urllib.urlencode(data)))
+            response = json.loads(response.read())
+            if response['json']['return_code'] == 2:
+                #if its non-ejabberd server,ignore
+                if response['json']['msg'] != "The ipop-ejabberd server is not running":
+                    return dict(json=response['json'])
         db(db.xmpnode.jid == jid).delete()
     return dict(json={'return_code':0,'msg':'successfully deleted'})
 
@@ -192,9 +195,9 @@ def unregister_relationship():
     vars = request.get_vars
     jid = vars['jid']
     xmpp_host = vars['xmpp_host']
+    #user@ejabberd => user ejabberd
     instruction = "ejabberdctl unregister %s"%(jid.replace('@',' '))
     try:
-        #xmpp_host = query_result[0].xmpp_host
         resp = gvpnconfig.send_ejabberd(xmpp_host,instruction,delet = 1)
     except OSError as er:
         return dict(json={'return_code':2,'msg':str(er)})
