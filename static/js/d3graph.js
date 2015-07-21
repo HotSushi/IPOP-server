@@ -42,7 +42,7 @@ function creategraph(graphdata,selector){
         height = 320;
 
     //Set up the colour scale
-    var color = d3.scale.category20();
+    var color = d3.scale.category10();
 
     //Set up the force layout
     var force = d3.layout.force()

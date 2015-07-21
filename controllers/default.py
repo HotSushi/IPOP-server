@@ -246,7 +246,11 @@ def getgraph():
         each_node['name']=node.jid
         each_node['password']=node.password
         each_node['ip']=node.ip
-        each_node['group']=1
+        if node.status == 'running':
+            each_node['group']=4 # green color
+        else:
+            each_node['group']=5 # red color
+        
         each_link["source"]=len(Nodes)
         each_link["target"]=xmpphostarray.index(node.xmpp_host)
         Nodes.append(each_node)
