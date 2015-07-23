@@ -43,7 +43,7 @@ function creategraph(graphdata,selector){
 
     //Set up the colour scale
     var color = d3.scale.category10();
-
+    
     //Set up the force layout
     var force = d3.layout.force()
         .charge(-600)
@@ -91,7 +91,8 @@ function creategraph(graphdata,selector){
     node.append("circle")
         .attr("r", 15)
         .style("fill", function (d) {
-        return color(d.group);
+        color_list = ['blue','green','red']
+        return color_list[d.group];
     })
 
     node.append("text")

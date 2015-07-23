@@ -5,6 +5,7 @@ import urllib
 import urllib2
 import serverxmpp
 import gvpnconfig
+import heartbeat
 
 from Crypto.PublicKey import RSA
 
@@ -238,7 +239,7 @@ def getgraph():
         each_node['name']=xh
         each_node['password']=''
         each_node['ip']=''
-        each_node['group']=2
+        each_node['group']=0
         Nodes.append(each_node)
     for node in vpn_nodes:
         each_node = {}
@@ -247,9 +248,9 @@ def getgraph():
         each_node['password']=node.password
         each_node['ip']=node.ip
         if node.status == 'running':
-            each_node['group']=4 # green color
+            each_node['group']=1 # green color
         else:
-            each_node['group']=5 # red color
+            each_node['group']=2 # red color
         
         each_link["source"]=len(Nodes)
         each_link["target"]=xmpphostarray.index(node.xmpp_host)
@@ -290,6 +291,10 @@ def set():
     if(vars['type'] == 'set_public_key'):
         db(db.xmpnode.jid == vars['xmppid']).update(public_key=vars['public_key'])
     elif(vars['type'] == 'change_status'):
+        if vars['status'] == 'running':
+            heartbeat.beat(vars['xmppid'])
+        elif vars['status'] == 'stopped':
+            heartbeat.kill(vars['xmppid'])
         db(db.xmpnode.jid == vars['xmppid']).update(status=vars['status'])
     elif(vars['type'] == 'change_ip'):
         db(db.xmpnode.jid == vars['xmppid']).update(ip=vars['ip'])
