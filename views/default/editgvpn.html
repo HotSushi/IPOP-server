@@ -7,8 +7,14 @@
     //networkmap click callback
    function ongraphclick(d) {
           if (d3.event.defaultPrevented) return; // ignore drag
-          uri = "node="+d.name;
-          window.location = "http://127.0.0.1:8000{{=URL('log')}}?"+encodeURI(uri);
+          if(d.group == 0){
+              uri = "node="+d.name;
+              window.location = "http://127.0.0.1:8000{{=URL('log')}}?"+encodeURI(uri);
+           }
+           else{
+              uri = "xmppid="+d.name;
+              window.location = "http://127.0.0.1:8000{{=URL('monitor')}}?"+encodeURI(uri);
+           }
     }
     function delet(stringg){
        uri = "jids="+stringg;
