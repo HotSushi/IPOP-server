@@ -1,56 +1,10 @@
 {{extend 'layout.html'}}
 <script>
-function getUrl() {
-    var baseurl = "http://localhost/ganglia/graph.php?";
-    var str = $( "#graph_form" ).serialize();
-    return baseurl+str;
-}
 function changeValues(){
-    var duration = $("#graphtime").val();
-    var peerid = $("#peerid").val();
-
-    $("input[id='duration']").val(duration);
-
-    $("input[id='graphname']").val("peer_ipop_links");
-    $("input[id='verticalaxis']").val("links");
-    $("input[id='title']").val("Number of peer links");
-    $("#no_of_peers").attr("src",getUrl())
-
-    $("input[id='graphname']").val("peer_bytes_recv_-"+peerid);
-    $("input[id='verticalaxis']").val("Bytes/Second");
-    $("input[id='title']").val("Bytes received by "+peerid);
-    $("#bytes_received").attr("src",getUrl())
-
-    $("input[id='graphname']").val("peer_bytes_sent_-"+peerid);
-    $("input[id='title']").val("Bytes sent by "+peerid);
-    $("#bytes_sent").attr("src",getUrl())
-
-    $("input[id='graphname']").val("peer_conn_age_-"+peerid);
-    $("input[id='verticalaxis']").val("Seconds");
-    $("input[id='title']").val("Connection age of "+peerid);
-    $("#connection_age").attr("src",getUrl())
-
-    $("input[id='graphname']").val("peer_xmpp_time_-"+peerid);
-    $("input[id='title']").val("XMPP time "+peerid);
-    $("#xmpp_time").attr("src",getUrl())
-
-    $("input[id='graphname']").val("peer_status_-"+peerid);
-    $("input[id='verticalaxis']").val("On/Off");
-    $("input[id='title']").val("Status of "+peerid);
-    $("#status").attr("src",getUrl())
-}
-
+    $("#duration").val($("#graphtime").val());
+    $('#graph_form').submit();
+ }
 </script>
-
-<form id="graph_form" style="display:none">
-  <input id="duration" type="text" name="r" value="hour">
-  <input id="size" type="hidden" name="z" value="medium">
-  <input id="clustername" type="text" name="c" value="my cluster">
-  <input id="server" type="hidden" name="h" value="localhost">
-  <input id="graphname" type="text" name="m">
-  <input id="verticalaxis" type="text" name="vl">
-  <input id="title" type="text" name="ti">
-</form>
 
 <div>
     <h1>Monitor your nodes</h1>
@@ -65,25 +19,26 @@ function changeValues(){
                 <option value="month">Month</option>
                 <option value="year">Year</option>
         </select>
-        <div class="graphnopeers">
-            <img id="no_of_peers" class="graphimg"></img>
-        </div>
-        <div class="graphstats">
-            Select Peer:
-            <select id="peerid">
-                {{for item in peerlist:}}<option value={{=item}}>{{=item}}</option>{{pass}}
-            </select><br>
-            <img id="bytes_received" class="graphimg" ></img>
-            <img id="bytes_sent" class="graphimg" ></img><br>
-            <img id="connection_age" class="graphimg" ></img>
-            <img id="status" class="graphimg"></img><br>
-            <img id="xmpp_time" class="graphimg" ></img>
+        <form id="graph_form" style="display:none">
+          <input id="duration" name="duration" value="hour">
+          <input name="xmppid" value="{{=request.get_vars['xmppid']}}">
+        </form>
+        <div>
+            {{for i in range(len(json)):}}
+                <figure style="float:left">
+                    <img src="{{= json[i]['url'] }}">
+                    <figcaption>{{=json[i]['title']}}</figcaption>
+                </figure>
+            {{pass}}
         </div>
     </div>
+    <br>
+    <a href="{{=URL('log')+'?node='+request.get_vars['xmppid']}}">Click to see log files</a>
 </div>
+
 <script>
-//on page load
-changeValues()
 $( "#graphtime" ).on( "change",changeValues);
-$( "#peerid" ).on( "change",changeValues);
 </script>
+
+
+

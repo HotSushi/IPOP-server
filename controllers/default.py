@@ -54,13 +54,37 @@ def download():
 
 
 def monitor():
-    #fix-this
-    f = open("/home/hotsushi/ipopstats/peer_list_ganglia.json")
-    peers = []
-    for line in f:
-        data = json.loads(line)
-        peers.append(data[0])
-    return dict(peerlist = peers)
+    vars = request.get_vars
+    jid = vars['xmppid']
+    time_period = vars['duration'] or 'hour'
+    query = db(db.xmpnode.jid == jid).select()
+    if len(query) == 0:
+        return "monitoring info not available"
+    ip = query[0].ip
+
+    ganglia_graph_params = {
+        'z':'medium',
+        'c':'my cluster',
+        'r': time_period
+        }
+    info = [
+        ['peer_conn_age_-'+ip,'Seconds','Connection age of '+ip],
+        ['peer_bytes_recv_-'+ip,'Bytes/Seconds','Bytes recvd by '+ip],
+        ['peer_bytes_sent_-'+ip,'Bytes/Seconds','Bytes sent by '+ip],
+        ['peer_status_-'+ip,'On/Off','Status On/off of '+ip],
+        ['peer_xmpp_time_-'+ip,'Seconds','Xmpp time of '+ip]
+    ]
+    #http://localhost/ganglia/graph.php?r=hour&z=medium&c=my+cluster&m=peer_bytes_recv_-192.170.32.3&vl=Bytes%2FSecond&ti=Bytes+received+by+192.170.32.3
+    json_data = []
+    for each_info in info:
+        arr = {}
+        ganglia_graph_params['m']=each_info[0]
+        ganglia_graph_params['vl']=each_info[1]
+        arr['title'] = ganglia_graph_params['ti']=each_info[2]
+        arr['url'] = 'http://localhost/ganglia/graph.php?'+urllib.urlencode(ganglia_graph_params)
+        json_data.append(arr)
+    
+    return dict(json = json_data)
 
 def creategvpn():
     return dict()
