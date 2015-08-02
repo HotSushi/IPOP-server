@@ -52,9 +52,7 @@ class AdminGVPNWrapper:
             with open('config.ini','w') as fo:
                 fo.write(f.read() % (xmpphost, adminjid, password, vpnname, ipspace, jid_string))
 
-awr = AdminGVPNWrapper()
+# awr = AdminGVPNWrapper()
 # awr.create_room('agv@ejabberd', 'agvpn', '127.0.0.1', 'sushant')
-awr.set_config('agv@ejabberd', 'agvpn', '127.0.0.1', 'sushant', '192.166.0.0', ['sus','tt','bok'])
-#awr.set_config('agvberd', 'agvpn', '127.0.0.1', 'sushant', '1920', ['sus','tt','bok'])
-
-print awr.invite()
+# awr.set_config('agv@ejabberd', 'agvpn', '127.0.0.1', 'sushant', '192.166.0.0', ['sus','tt','bok'])
+# print awr.invite()
