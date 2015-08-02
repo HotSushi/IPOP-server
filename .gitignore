@@ -7,3 +7,9 @@ sessions/*
 models/db.py.1
 progress.log
 
+modules/access.logging
+modules/ip_table.db
+modules/jid_ip_table.db
+modules/jid_table.db
+modules/room_creation.logging
+static/scripts/config.ini
