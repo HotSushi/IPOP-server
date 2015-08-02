@@ -3,7 +3,7 @@ import subprocess
 
 class AdminGVPNWrapper:
     def __init__(self):
-        print subprocess.check_output(['./create_room.py'])
+        pass
 
     def create_room(self, adminjid, password, xmpphost, vpnname):
         # set config file
@@ -20,7 +20,32 @@ class AdminGVPNWrapper:
             raise ValueError('Error: data in form incorrect')
         return 0
 
+    def manage_room(self, arg, arg_desc):
+        # run manageuser
+        args = ['timeout', '8s', 'python', 'manageUsers.py', '-u', 'config.ini',  arg, arg_desc]
+        p = subprocess.Popen(args, stdout=subprocess.PIPE)
+        if p.wait() != 0:
+            raise ValueError('Error: while managing room')
+        # if invite type extract ip allocation
+        if arg == '-i':
+            ip_alloc = {}
+            lines = p.stdout.read().split('\n')
+            for line in lines[2:]:
+                if '::' in line:
+                    jid,ip = line.split('::')
+                    ip_alloc[jid] = ip
+            return ip_alloc
+        return 0
+
+    def delete(self):
+        return self.manage_room('-d', 'DELETE')
+
+    def invite(self):
+        return self.manage_room('-i', 'INVITE')
+
     def set_config(self, adminjid, password, xmpphost, vpnname, ipspace, jids = []):
+        if len(jids) == 0:
+            raise ValueError('Jids not passed')
         jid_string = " : None\n".join(jids) + " : None"
         # open applicants.ini
         with open('applicants.ini', 'r') as f:
@@ -30,3 +55,6 @@ class AdminGVPNWrapper:
 awr = AdminGVPNWrapper()
 # awr.create_room('agv@ejabberd', 'agvpn', '127.0.0.1', 'sushant')
 awr.set_config('agv@ejabberd', 'agvpn', '127.0.0.1', 'sushant', '192.166.0.0', ['sus','tt','bok'])
+#awr.set_config('agvberd', 'agvpn', '127.0.0.1', 'sushant', '1920', ['sus','tt','bok'])
+
+print awr.invite()
