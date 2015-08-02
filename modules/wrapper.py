@@ -20,5 +20,13 @@ class AdminGVPNWrapper:
             raise ValueError('Error: data in form incorrect')
         return 0
 
+    def set_config(self, adminjid, password, xmpphost, vpnname, ipspace, jids = []):
+        jid_string = " : None\n".join(jids) + " : None"
+        # open applicants.ini
+        with open('applicants.ini', 'r') as f:
+            with open('config.ini','w') as fo:
+                fo.write(f.read() % (xmpphost, adminjid, password, vpnname, ipspace, jid_string))
+
 awr = AdminGVPNWrapper()
-awr.create_room('agv@ejabberd', 'agvpn', '127.0.0.1', 'sushant')
+# awr.create_room('agv@ejabberd', 'agvpn', '127.0.0.1', 'sushant')
+awr.set_config('agv@ejabberd', 'agvpn', '127.0.0.1', 'sushant', '192.166.0.0', ['sus','tt','bok'])
