@@ -12,13 +12,13 @@ class AdminGVPNWrapper:
             with open('config.ini', 'w') as fo:
                 fo.write(room_config % (adminjid, password, xmpphost, vpnname))
         # run create_room
-        args = ['timeout', '3s', './create_room.py']#, '-r', 'config.ini']
-        p = subprocess.Popen(args)
-        print p.wait()
-        print p.communicate()
-        pass
+        args = ['timeout', '8s', './create_room.py', '-r', 'config.ini']
+        p = subprocess.Popen(args, stdout=subprocess.PIPE)
+        if p.wait() != 0:
+            raise ValueError('Error: while creating room')
+        if 'Success' not in p.stdout.read():
+            raise ValueError('Error: data in form incorrect')
+        return 0
 
-    def set_create_room_config(self, config):
-        pass
 awr = AdminGVPNWrapper()
-awr.create_room('a@ejab', 'pass', '192.168.0.1', 'sushant')
+awr.create_room('agv@ejabberd', 'agvpn', '127.0.0.1', 'sushant')
