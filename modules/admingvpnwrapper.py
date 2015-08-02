@@ -59,8 +59,8 @@ class AdminGVPNWrapper:
                                      ipspace, jid_string))
 
 #print open('../static/scripts/room_config.ini').read()
-awr = AdminGVPNWrapper()
+#awr = AdminGVPNWrapper()
 #awr.create_room('agv@ejabberd', 'agvpn', '127.0.0.1', 'sushant')
-awr.set_config('agv@ejabberd', 'agvpn', '127.0.0.1', 'sushant',
- '192.166.0.0', ['sus','tt','bok'])
-print awr.invite()
+#awr.set_config('agv@ejabberd', 'agvpn', '127.0.0.1', 'sushant',
+# '192.166.0.0', ['sus','tt','bok'])
+#print awr.invite()
