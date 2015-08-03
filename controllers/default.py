@@ -252,11 +252,18 @@ def admingvpn():
         except ValueError as er:
             return dict(json={'return_code':2,'msg':str(er)})
         return dict(json={'return_code':0,'msg':'success'})
-    if vars['type'] == 'invite':
+    elif vars['type'] == 'invite' or vars['type'] == 'delete':
         #handle invite
-        pass
-    elif vars['type'] == 'delete':
-        pass 
+        try:
+            admingvpnwrapper.set_config('agv@ejabberd','agvpn','127.0.0.1','sus', '192.163.0.0',
+               jids=['a','b'])
+            if vars['type'] == 'invite':
+                ip_alloc = admingvpnwrapper.invite()
+            elif vars['type'] == 'delete':
+                admingvpnwrapper.delete()
+        except ValueError as er:
+            return dict(json={'return_code':2,'msg':str(er)})
+        return dict(json={'return_code':0,'msg':ip_alloc })
 
 def getgraph():
     vars = request.get_vars
