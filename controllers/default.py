@@ -245,6 +245,7 @@ def unregister_relationship():
 
 def admingvpn():
     vars = request.get_vars
+    admin_jid,admin_pw,xmpp_host,vpn_name,ipspace = vars['admin_jid'],vars['admin_password'],vars['xmpp_host'], vars['vpnname'], vars['ipspace'] 
     if vars['type'] == 'create':
         # create muc room
         try:
@@ -256,14 +257,15 @@ def admingvpn():
         #handle invite
         try:
             admingvpnwrapper.set_config('agv@ejabberd','agvpn','127.0.0.1','sus', '192.163.0.0',
-               jids=['a','b'])
+               vars['jids'].split())
             if vars['type'] == 'invite':
                 ip_alloc = admingvpnwrapper.invite()
+                return dict(json={'return_code':0,'msg':ip_alloc })
             elif vars['type'] == 'delete':
                 admingvpnwrapper.delete()
         except ValueError as er:
             return dict(json={'return_code':2,'msg':str(er)})
-        return dict(json={'return_code':0,'msg':ip_alloc })
+        return dict(json={'return_code':0,'msg':'success'})
 
 def getgraph():
     vars = request.get_vars
