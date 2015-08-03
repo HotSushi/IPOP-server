@@ -6,6 +6,7 @@ import urllib2
 import serverxmpp
 import gvpnconfig
 import heartbeat
+import admingvpnwrapper
 
 from Crypto.PublicKey import RSA
 
@@ -83,7 +84,7 @@ def monitor():
         arr['title'] = ganglia_graph_params['ti']=each_info[2]
         arr['url'] = 'http://localhost/ganglia/graph.php?'+urllib.urlencode(ganglia_graph_params)
         json_data.append(arr)
-    
+
     return dict(json = json_data)
 
 def creategvpn():
@@ -139,7 +140,7 @@ def delet():
         ejabberd_password = db(db.vpn.id == query_result[0].vpn_id).select()[0].ejabberd_password
         data['jid'] = jid
         data['xmpp_host'] = query_result[0].xmpp_host
-        #if ejabberd_password is empty, implies non-ejabberd server 
+        #if ejabberd_password is empty, implies non-ejabberd server
         if ejabberd_password != '':
             data['xmpp_host_password'] = ejabberd_password
             response = urllib2.urlopen('http://127.0.0.1:8000%s?%s'%(URL('unregister_relationship.json'),urllib.urlencode(data)))
@@ -211,7 +212,7 @@ def register_relationships():
         response_ob['return_code'] = 2
         response_ob['msg'] = str(er)
         return dict(json =response_ob)
-    
+
     #FIX-THIS = dependent on front end
     node_list = []
     for each_config in config:
@@ -221,7 +222,7 @@ def register_relationships():
         node['xmpp_host'] = vars['xmpp_host']
         node['ip4'] = each_config['ip4']
         node_list.append(node)
-    
+
     resp = json.loads(resp)
     resp['nodes'] = node_list
     return dict(json=resp)
@@ -242,6 +243,20 @@ def unregister_relationship():
     resp = json.loads(resp)
     return dict(json=resp)
 
+def admingvpn():
+    vars = request.get_vars
+    if vars['type'] == 'create':
+        # create muc room
+        try:
+            admingvpnwrapper.create_room('agv@ejabberd','agvpn','127.0.0.1','sus')
+        except ValueError as er:
+            return dict(json={'return_code':2,'msg':str(er)})
+        return dict(json={'return_code':0,'msg':'success'})
+    if vars['type'] == 'invite':
+        #handle invite
+        pass
+    elif vars['type'] == 'delete':
+        pass 
 
 def getgraph():
     vars = request.get_vars
@@ -254,7 +269,7 @@ def getgraph():
     xmpphostarray = []
     for node in vpn_nodes:
         if node.xmpp_host not in xmpphostarray:
-            xmpphostarray.append(node.xmpp_host) 
+            xmpphostarray.append(node.xmpp_host)
     #set up node and Links
     Nodes = []
     Links = []
@@ -267,7 +282,7 @@ def getgraph():
         Nodes.append(each_node)
     for node in vpn_nodes:
         each_node = {}
-        each_link = {} 
+        each_link = {}
         each_node['name']=node.jid
         each_node['password']=node.password
         each_node['ip']=node.ip
@@ -275,7 +290,7 @@ def getgraph():
             each_node['group']=1 # green color
         else:
             each_node['group']=2 # red color
-        
+
         each_link["source"]=len(Nodes)
         each_link["target"]=xmpphostarray.index(node.xmpp_host)
         Nodes.append(each_node)
@@ -284,7 +299,7 @@ def getgraph():
     json["nodes"]=Nodes
     json["links"]=Links
     return json
-        
+
 def log():
     vars = request.get_vars
     if vars['type'] == 'set':
@@ -308,7 +323,7 @@ def log():
                         return dict(json = [entry])
                 return dict(json = '')
         return dict(json = select_list)
-        
+
 
 def set():
     vars = request.get_vars
