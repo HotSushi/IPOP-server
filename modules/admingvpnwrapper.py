@@ -3,6 +3,7 @@ import os
 
 #FIX-THIS
 DIR = os.getcwd()+'/applications/IPOP/static/scripts/'
+CWD = DIR
 
 def create_room(adminjid, password, xmpphost, vpnname):
     # set config file
@@ -13,7 +14,7 @@ def create_room(adminjid, password, xmpphost, vpnname):
     # run create_room
     args = ['timeout', '8s', 'python', DIR+'create_room.py',
             '-r', DIR+'config.ini']
-    p = subprocess.Popen(args, stdout=subprocess.PIPE)
+    p = subprocess.Popen(args, stdout=subprocess.PIPE, cwd=DIR+vpnname+'/')
     if p.wait() != 0:
         raise ValueError('Error: while creating room')
     if 'Success' not in p.stdout.read():
@@ -24,7 +25,7 @@ def manage_room(arg, arg_desc):
     # run manageuser
     args = ['timeout', '8s', 'python', DIR+'manageUsers.py', '-u',
             DIR+'config.ini',  arg, arg_desc]
-    p = subprocess.Popen(args, stdout=subprocess.PIPE)
+    p = subprocess.Popen(args, stdout=subprocess.PIPE, cwd=CWD)
     if p.wait() != 0:
         raise ValueError('Error: while managing room')
     # if invite type extract ip allocation
@@ -54,6 +55,9 @@ def set_config(adminjid, password, xmpphost, vpnname, ipspace,
         with open(DIR+'config.ini', 'w') as fo:
             fo.write(f.read() % (xmpphost, adminjid, password, vpnname,
                                  ipspace, jid_string))
+    if not os.path.exists(DIR+'db/'+vpnname+'/'):
+        os.makedirs(DIR+'db/'+vpnname+'/')
+        CWD = DIR+'db/'+vpnname+'/'
 
 #print open('../static/scripts/room_config.ini').read()
 #awr = AdminGVPNWrapper()
