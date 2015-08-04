@@ -249,7 +249,7 @@ def admingvpn():
     if vars['type'] == 'create':
         # create muc room
         try:
-            admingvpnwrapper.create_room('agv@ejabberd','agvpn','127.0.0.1','sus')
+            admingvpnwrapper.create_room('agvpn@ejabberd','agvpn','127.0.0.1','sus')
         except ValueError as er:
             return dict(json={'return_code':2,'msg':str(er)})
         return dict(json={'return_code':0,'msg':'success'})
