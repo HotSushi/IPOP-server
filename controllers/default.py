@@ -249,15 +249,14 @@ def admingvpn():
     if vars['type'] == 'create':
         # create muc room
         try:
-            admingvpnwrapper.create_room('agvpn@ejabberd','agvpn','127.0.0.1','sus')
+            admingvpnwrapper.create_room('agvpn@ejabberd','agvpn','127.0.0.1','susano')
         except ValueError as er:
             return dict(json={'return_code':2,'msg':str(er)})
         return dict(json={'return_code':0,'msg':'success'})
     elif vars['type'] == 'invite' or vars['type'] == 'delete':
         #handle invite
         try:
-            admingvpnwrapper.set_config('agv@ejabberd','agvpn','127.0.0.1','sus', '192.163.0.0',
-               vars['jids'].split())
+            admingvpnwrapper.set_config('agv@ejabberd','agvpn','127.0.0.1','susano', '192.163.0.0',vars['jids'].split())
             if vars['type'] == 'invite':
                 ip_alloc = admingvpnwrapper.invite()
                 return dict(json={'return_code':0,'msg':ip_alloc })
@@ -265,6 +264,13 @@ def admingvpn():
                 admingvpnwrapper.delete()
         except ValueError as er:
             return dict(json={'return_code':2,'msg':str(er)})
+        return dict(json={'return_code':0,'msg':'success'})
+    elif vars['type'] == 'destroy':
+        #deletes room completely
+        try:
+            admingvpnwrapper.delete_room(vpn_name)
+        except OSError as er:
+            return dict(json={'return_code':2,'msg':'room doesn\'t exist'})
         return dict(json={'return_code':0,'msg':'success'})
 
 def getgraph():

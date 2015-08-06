@@ -1,10 +1,12 @@
 import subprocess
 import os
+import shutil
 
 #FIX-THIS
 DIR = os.getcwd()+'/applications/IPOP/static/scripts/'
 CWD = DIR
 
+# assumes duplicate validation already done
 def create_room(adminjid, password, xmpphost, vpnname):
     # set config file
     with open(DIR+'room_config.ini', 'r') as f:
@@ -18,8 +20,10 @@ def create_room(adminjid, password, xmpphost, vpnname):
     p = subprocess.Popen(args, cwd=CWD, stdout=subprocess.PIPE)
     if p.wait() != 0:
         raise ValueError('Error: while creating room')
+        removeDir(vpnname)
     if 'Success' not in p.stdout.read():
         raise ValueError('Error: data in form incorrect')
+        removeDir(vpnname)
     return 0
 
 def manage_room(arg, arg_desc):
@@ -40,6 +44,9 @@ def manage_room(arg, arg_desc):
         return ip_alloc
     return 0
 
+def delete_room(vpnname):
+    removeDir(vpnname)
+
 def delete():
     return manage_room('-d', 'DELETE')
 
@@ -52,6 +59,11 @@ def makeDir(vpnname):
         os.makedirs(DIR+'db/'+vpnname+'/')
     CWD = DIR+'db/'+vpnname+'/'
 
+def removeDir(vpnname):
+    global CWD
+    CWD = DIR+'db/'+vpnname+'/'
+    shutil.rmtree(CWD)
+    
 def set_config(adminjid, password, xmpphost, vpnname, ipspace,
                jids=[]):
     if len(jids) == 0:
