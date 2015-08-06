@@ -6,7 +6,7 @@ sessions/*
 *~
 models/db.py.1
 progress.log
-
+static/scripts/db/*
 modules/access.logging
 modules/ip_table.db
 modules/jid_ip_table.db

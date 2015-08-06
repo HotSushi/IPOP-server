@@ -1,0 +1,107 @@
+{{extend 'layout.html'}}
+<script>
+var jids = []
+var jidpws = []
+var ips = []
+var jidhost = []
+
+function addlistitem(){
+    jid = $("#xmppidtxtbox").val()
+    jidp = $("#xmpppwtxtbox").val()
+    if(jids.indexOf(jid) == -1){
+        jids.push(jid)
+        jidpws.push(jidp)
+        $("#xmppjidlist").append( "<li>" + jid + "  :  " + jidp +"</li>")
+    }
+}
+
+function fillJid(){
+    var tempj=""
+    var tempp=""
+
+    for (i=0;i<jids.length;i++){
+        tempj += jids[i] + " "
+        tempp += jidpws[i] + " "
+    }
+    $("#xmppid").val(tempj.trim())
+    $("#xmpppw").val(tempp.trim())
+    createroom()
+}
+function createroom(){
+    data = $("form").serialize()
+    $.getJSON("http://127.0.0.1:8000{{=URL('admingvpn.json')}}", data+'&type=create',function(result){
+        if (result.json.return_code != 0){
+             alert("Error:"+result.json.msg);
+        }
+        else{
+            inviteroom();
+        }
+    });
+}
+
+function inviteroom(){
+    data = $("form").serialize()
+    $.getJSON("http://127.0.0.1:8000{{=URL('admingvpn.json')}}", data+'&type=invite',function(result){
+        if (result.json.return_code != 0){
+             alert("Error:"+result.json.msg);
+        }
+        else{
+            create(result.json.msg);
+        }
+    });
+}
+
+
+
+function create(jsonobj){
+    var xip = ""
+    var xh = ""
+    jQuery.each(jsonobj, function(i, val) {
+        xip += val + " " 
+        xh += $('#xmpphost').val() + " "
+    });
+    data = {
+        adminjid:$('#adminjid').val(),
+        adminpw:$('#adminpw').val(),
+        vpnname:$('#vpnname').val(),
+        subnet:24,
+        xmppid:$("#xmppid").val(),
+        xmpppw:$("#xmpppw").val(),
+        nodeip:xip.trim(),
+        xmpphost:xh.trim(),
+    }
+    window.location = "http://127.0.0.1:8000{{=URL('put.json')}}?" + $.param( data )
+}
+
+</script>
+<h1>Create VPN</h1>
+<form action='{{=URL("admingvpn.json")}}' method="GET">
+    XMPP details required for security purpose:<br>
+    Admin JID: <input id="adminjid" name="admin_jid" type="text" placeholder="ex. alice123@xmpp.jp" /><br>
+    Admin Password: <input id="adminpw" name="admin_password" type="password" placeholder="password" /><br><br>
+    XMPP Host: <input id="xmpphost" name="xmpp_host" type="text"/>
+    
+    VPN details:<br>
+    VPN Name :  <input id="vpnname" name="vpnname" type="text" placeholder="ex. Sushant" /><br>
+    IPv4 Space : <input id="ipspace" name="ipspace" type="text" placeholder="ex. 24" /><br>
+    <input id="xmppid" name="jids" type="text" style="display: none;"/>
+    <input id="xmpppw" name="pwds" type="text" style="display: none;"/>
+    <br><br>
+
+    <h3>Add Nodes One by one</h3>
+    <div id="addnodes">
+        <input id="xmppidtxtbox" type="text" placeholder="Enter XMPP JID" />
+        <input id="xmpppwtxtbox" type="text" placeholder="Enter XMPP password" />
+        <input type="button" value="Add Node" onclick="addlistitem()"/>
+        <br><br>
+        
+    </div>
+
+    <h3>JID list:</h3>
+        <ul id="xmppjidlist" style="list-style-type:none">
+            <li><b>Xmpp JID  :  Password</b></li>
+        </ul>
+
+    <input type="button" value="Create" onclick="fillJid();createroom();"/>
+</form>
+

@@ -19,11 +19,11 @@ def create_room(adminjid, password, xmpphost, vpnname):
     makeDir(vpnname)
     p = subprocess.Popen(args, cwd=CWD, stdout=subprocess.PIPE)
     if p.wait() != 0:
+        removeDir(vpnname)
         raise ValueError('Error: while creating room')
-        removeDir(vpnname)
     if 'Success' not in p.stdout.read():
-        raise ValueError('Error: data in form incorrect')
         removeDir(vpnname)
+        raise ValueError('Error: data in form incorrect')
     return 0
 
 def manage_room(arg, arg_desc):

@@ -246,17 +246,20 @@ def unregister_relationship():
 def admingvpn():
     vars = request.get_vars
     admin_jid,admin_pw,xmpp_host,vpn_name,ipspace = vars['admin_jid'],vars['admin_password'],vars['xmpp_host'], vars['vpnname'], vars['ipspace'] 
+    vpn_name = vpn_name.lower()
     if vars['type'] == 'create':
         # create muc room
         try:
-            admingvpnwrapper.create_room('agvpn@ejabberd','agvpn','127.0.0.1','susano')
+            #admingvpnwrapper.create_room('agvpn@ejabberd','agvpn','127.0.0.1','susano')
+            admingvpnwrapper.create_room(admin_jid,admin_pw,xmpp_host,vpn_name)
         except ValueError as er:
             return dict(json={'return_code':2,'msg':str(er)})
         return dict(json={'return_code':0,'msg':'success'})
     elif vars['type'] == 'invite' or vars['type'] == 'delete':
         #handle invite
         try:
-            admingvpnwrapper.set_config('agv@ejabberd','agvpn','127.0.0.1','susano', '192.163.0.0',vars['jids'].split())
+            #admingvpnwrapper.set_config('agvpn@ejabberd','agvpn','127.0.0.1','susano','192.167.0.0',vars['jids'].split())
+            admingvpnwrapper.set_config(admin_jid,admin_pw,xmpp_host,vpn_name,ipspace,vars['jids'].split())
             if vars['type'] == 'invite':
                 ip_alloc = admingvpnwrapper.invite()
                 return dict(json={'return_code':0,'msg':ip_alloc })
@@ -272,6 +275,7 @@ def admingvpn():
         except OSError as er:
             return dict(json={'return_code':2,'msg':'room doesn\'t exist'})
         return dict(json={'return_code':0,'msg':'success'})
+    return dict()
 
 def getgraph():
     vars = request.get_vars
