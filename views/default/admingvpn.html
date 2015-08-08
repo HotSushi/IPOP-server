@@ -69,6 +69,7 @@ function create(jsonobj){
         xmpppw:$("#xmpppw").val(),
         nodeip:xip.trim(),
         xmpphost:xh.trim(),
+        isadmingvpn:'yes'
     }
     window.location = "http://127.0.0.1:8000{{=URL('put.json')}}?" + $.param( data )
 }

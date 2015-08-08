@@ -120,7 +120,8 @@ def editgvpn():
 
 def put():
     vars = request.get_vars
-    id = db.vpn.insert(vpn_name=vars['vpnname'],description="none",admin_jid=vars['adminjid'],admin_password=vars['adminpw'],ipv4_mask=vars['subnet'],ejabberd_password=vars['xmpp_host_password'])
+    is_admingvpn = vars['isadmingvpn'] or 'no'
+    id = db.vpn.insert(vpn_name=vars['vpnname'],description="none",admin_jid=vars['adminjid'],admin_password=vars['adminpw'],ipv4_mask=vars['subnet'],ejabberd_password=vars['xmpp_host_password'],is_admingvpn=is_admingvpn)
     xids = vars['xmppid'].split(" ")
     xidp = vars['xmpppw'].split(" ")
     nodeip = vars['nodeip'].split(" ")
@@ -246,7 +247,8 @@ def unregister_relationship():
 def admingvpn():
     vars = request.get_vars
     admin_jid,admin_pw,xmpp_host,vpn_name,ipspace = vars['admin_jid'],vars['admin_password'],vars['xmpp_host'], vars['vpnname'], vars['ipspace'] 
-    vpn_name = vpn_name.lower()
+    if vpn_name:
+        vpn_name = vpn_name.lower()
     if vars['type'] == 'create':
         # create muc room
         try:
