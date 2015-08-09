@@ -161,6 +161,7 @@ def get():
     if vars['type'] == 'getjson':
         xid = vars['xmppid']
         row = db(db.xmpnode.jid == xid).select()[0]
+        is_admingvpn = db(db.vpn.id == row.vpn_id).select()[0].is_admingvpn
         dic = {
             "xmpp_username": "",
             "xmpp_password": "",
@@ -168,13 +169,15 @@ def get():
             "ip4": "",
             "ip4_mask": 24,
             "stat_report": True,
-            "tincan_logging": 0,
+            "tincan_logging": 2,
             "controller_logging": "DEBUG"
             }
         dic['xmpp_username'] = row.jid
         dic['xmpp_password'] = row.password
         dic['xmpp_host'] = row.xmpp_host
+        dic['is_admingvpn'] = is_admingvpn
         dic['ip4'] = row.ip
+        print dic
         config = json.dumps(dic)
         key = RSA.importKey(row.public_key)
         enc_data = key.encrypt(config, 32)[0]
