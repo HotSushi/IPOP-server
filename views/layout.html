@@ -1,16 +1,76 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>IPOP</title>
-    {{response.files.append(URL('static','css/skeleton.css'))}}
+<head>
+  <title>IPOP</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {{response.files.append(URL('static','css/skeleton.css'))}}
     {{include 'web2py_ajax.html'}}
       {{if session.logged_in_user == None and request.function != 'login' :}}
        {{ redirect(URL('login'))}}
       {{pass}}
-  </head>
-  <body>
-      <section id="main" class="container">
-            {{include}}
-      </section>
-  </body>
+
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <style>
+  body {
+      position: relative; 
+  }
+  .affix {
+      top:0px;
+      width: 100%;
+      z-index: 9999 !important;
+  }
+  .navbar {
+      margin-bottom: 0px;
+      min-height:70px;
+  }
+
+  .affix ~ .container-fluid {
+     position: relative;
+     top: 50px;
+  }
+  .component {padding-top:50px;min-height:500px;color: #fff; background-color: #1E88E5;}
+  
+  
+  </style>
+</head>
+
+<body data-spy="scroll" data-target=".navbar" data-offset="50">
+<div class="container-fluid">
+
+<div class="row">
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#mainmenu">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>                        
+      </button>
+      <a class="navbar-brand" href="#">IPOP</a>
+    </div>
+    <div class="collapse navbar-collapse" id="mainmenu">
+      <ul class="nav navbar-nav">
+
+        {{for entry in response.menu:}}
+            <li><a href="{{=entry[2]}}">{{=entry[0]}}</a></li>
+        {{pass}}
+
+
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+</div>
+
+  {{include}}
+
+
+</body>
 </html>

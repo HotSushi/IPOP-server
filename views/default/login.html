@@ -1,3 +1,28 @@
 {{ extend 'layout.html' }}
-{{ =form }}
+<div class="row container-fluid" style="background-color:#ff9800;">
+    <div class="col-sm-8" style="background-color:#673ab7;height:800px">
+        <div>
+            <h1 style="color:white;">Login from here<h1>
+        </div>
+    </div>
+    <div class='col-sm-4' style="background-color:#009688;height:800px">
+        <div style="position: absolute;top: 50%;">
+            {{=form}}
+             <form role="form" action="#" enctype="multipart/form-data" method="post">
+              <div class="form-group">
+                <label for="name">Username:</label>
+                <input type="text" class="form-control" name="name" id="name">
+              </div>
+              <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" class="form-control" name="password" id="password">
+              </div>
+              <div class="checkbox">
+                <label><input type="checkbox"> Remember me</label>
+              </div>
+              <button type="submit" value="login" class="btn btn-default">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
 {{=BEAUTIFY(message)}}
