@@ -5,6 +5,34 @@ var jidpws = []
 var ips = []
 var jidhost = []
 
+var data = ["#admindetails","#vpndetails","#addnodes"]
+var cur_view=0;
+function next(next){
+    //ON submit
+    if(cur_view == data.length-1 && next){
+        $('#progress-bar').css('width',100 + '%'); 
+        $('#progress-bar').css('width',cur_view*100/3 + '%');
+        fillJid() 
+        $('#mainform').submit()
+    }
+    if(next && cur_view<data.length-1){
+        cur_view+=1
+        changeView()
+    }
+    else if(!next && cur_view>0){
+        cur_view-=1
+        changeView()
+    }
+}
+function changeView(){
+    $('#progress-bar').css('width',cur_view*100/3 + '%');
+    for(i=0; i<data.length; i++){
+        $(data[i]).hide();
+    }
+    $(data[cur_view]).show();
+}
+
+
 function addlistitem(){
     jid = $("#xmppidtxtbox").val()
     jidp = $("#xmpppwtxtbox").val()
@@ -63,47 +91,99 @@ function register_ejabberd(){
     });
     }
 </script>
-<h1>Create VPN</h1>
-<form action='{{=URL("put.json")}}' method="GET">
-    XMPP details required for security purpose:<br>
-    Admin JID: <input id="adminjid" name="adminjid" type="text" placeholder="ex. alice123@xmpp.jp" /><br>
-    Admin Password: <input id="adminpw" name="adminpw" type="password" placeholder="password" /><br><br>
-    VPN details:<br>
-    VPN Name :  <input id="vpnname" name="vpnname" type="text" placeholder="ex. Sushant" /><br>
-    IPv4 Mask : <input id="subnet" name="subnet" type="text" placeholder="ex. 24" /><br>
-    <input id="xmppid" name="xmppid" type="text" style="display: none;"/>
-    <input id="xmpppw" name="xmpppw" type="text" style="display: none;"/>
-    <input id="xmppip" name="nodeip" type="text" style="display: none;"/>
-    <input id="xmpphost" name="xmpphost" type="text" style="display: none;"/>
-    <br><br>
+<div class="row container-fluid" style="background-color:#1E88E5;">
+    <div class="col-sm-8" style="background-color:#1E88E5;min-height:800px">
+        <h1>Create VPN</h1>
+        <form id="mainform" action='{{=URL("put.json")}}' method="GET">
+         
+         <div style="height:400px">   
+            <div id="admindetails">
+                <h3>Enter Admin Details</h3>
+                  <div class="form-group">
+                    <label for="adminjid">Admin Jabber ID:</label>
+                    <input name="adminjid" placeholder="ex. alice123@xmpp.jp" type="email" class="form-control">
+                  </div>
+                  <div class="form-group">
+                    <label for="adminpw">Admin Jabber Password:</label>
+                    <input type="password" class="form-control" name="adminpw">
+                  </div>
+            </div>
 
-    <h3>Add Nodes One by one</h3>
-    <div id="addnodes">
-        <input id="xmppidtxtbox" type="text" placeholder="Enter XMPP JID" />
-        <input id="xmpppwtxtbox" type="text" placeholder="Enter XMPP password" />
-        <input id="xmpphtxtbox" type="text" placeholder="Enter XMPP host" />
-        <input id="xmppiptxtbox" type="text" placeholder="Enter IP of the node" />
-        <input type="button" value="Add Node" onclick="addlistitem()"/>
-        <br><br>
-        
+            <div id="vpndetails">
+                <h3>Enter VPN Details</h3>
+                  <div class="form-group">
+                    <label for="vpnname">VPN Name:</label>
+                    <input name="vpnname" placeholder="no spaces" class="form-control">
+                  </div>
+                  <div class="form-group">
+                    <label for="subnet">IPV4 Mask:</label>
+                    <input class="form-control" name="subnet">
+                  </div>
+            </div>
+
+            <input id="xmppid" name="xmppid" type="text" style="display: none;"/>
+            <input id="xmpppw" name="xmpppw" type="text" style="display: none;"/>
+            <input id="xmppip" name="nodeip" type="text" style="display: none;"/>
+            <input id="xmpphost" name="xmpphost" type="text" style="display: none;"/>
+            
+
+            <div id="addnodes">
+                <h3>Add nodes</h3>
+                  <div class="form-group">
+                    <label for="xmppidtxtbox">Enter XMPP JID:</label>
+                    <input id="xmppidtxtbox" type="text" class="form-control">
+                  </div>
+                  <div class="form-group">
+                    <label for="xmpppwtxtbox">Enter XMPP Password:</label>
+                    <input id="xmpppwtxtbox" type="text" class="form-control">
+                  </div>
+                  <div class="form-group">
+                    <label for="xmpphtxtbox">Enter XMPP host:</label>
+                    <input id="xmpphtxtbox" type="text" class="form-control">
+                  </div>
+                  <div class="form-group">
+                    <label for="xmppiptxtbox">Enter IP:</label>
+                    <input id="xmppiptxtbox" type="text" class="form-control">
+                  </div>
+                <input class='btn btn-primary btn-lg btn-block' type="button" value="Add Node" onclick="addlistitem()"/>
+                
+            </div>
+        </div>
+            <input class='btn btn-default btn-lg' type="button" value="Previous" onclick="next(false);"/>
+            <input class='btn btn-default btn-lg' type="button" value="next" style="float:right;"onclick="next(true);"/>
+
+
+            <div class="progress">
+              <div id="progress-bar" class="progress-bar progress-bar-info progress-bar-striped" role="progressbar"
+              aria-valuenow="2" aria-valuemin="0" aria-valuemax="3" style="width:50%;height:30px;">
+              </div>
+            </div>
+
+
+            <div id="seemelater" style="display:none">
+            <br><br>
+            <h3>Add Nodes in bulk</h3>
+            <p>this requires ejabberd server as xmpp host, relationships and configuration files will be automatically generated</p>
+            <div id="addbulknodes">
+                <input id="no_of_nodes" name="no_of_nodes" type="number" min="1" step="1" placeholder="No of nodes" />
+                <input id="xmpp_host" name="xmpp_host" type="text" placeholder="IP of ejabberd server" />
+                <input id="xmpp_host_password" name="xmpp_host_password" type="password" placeholder="xmpp host sudo password"/>
+                <input id="ip4" name="ip4" type="text" placeholder="IP space for IPOP nodes" />
+                <input type="button" value="Generate" onclick="register_ejabberd()">
+            </div>    
+            </div>
+        </form>
     </div>
-
-    <br><br>
-    <h3>Add Nodes in bulk</h3>
-    <p>this requires ejabberd server as xmpp host, relationships and configuration files will be automatically generated</p>
-    <div id="addbulknodes">
-        <input id="no_of_nodes" name="no_of_nodes" type="number" min="1" step="1" placeholder="No of nodes" />
-        <input id="xmpp_host" name="xmpp_host" type="text" placeholder="IP of ejabberd server" />
-        <input id="xmpp_host_password" name="xmpp_host_password" type="password" placeholder="xmpp host sudo password"/>
-        <input id="ip4" name="ip4" type="text" placeholder="IP space for IPOP nodes" />
-        <input type="button" value="Generate" onclick="register_ejabberd()">
-    </div>    
-
-    <h3>JID list:</h3>
-        <ul id="xmppjidlist" style="list-style-type:none">
-            <li><b>Xmpp JID  :  Password  :  IP  :  Xmpp Host</b></li>
-        </ul>
-
-    <input type="submit" value="Create" onclick="fillJid()"/>
-</form>
+    <div class='col-sm-4' style="background-color:#673ab7;height:800px">
+        <div style="position: absolute; width:100%; top:30%; padding-right:10%;">
+            <h3>JID list:</h3>
+                <ul id="xmppjidlist" style="list-style-type:none">
+                    <li><b>Xmpp JID  :  Password  :  IP  :  Xmpp Host</b></li>
+                </ul>
+        </div>
+    </div>
+</div>
+<script>
+changeView()
+</script>
 
