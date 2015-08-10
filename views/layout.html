@@ -7,7 +7,7 @@
   {{response.files.append(URL('static','css/skeleton.css'))}}
     {{include 'web2py_ajax.html'}}
       {{if session.logged_in_user == None and request.function != 'login' :}}
-       {{ redirect(URL('login'))}}
+       {{ redirect(URL('login',vars=dict(message='Please login first')))}}
       {{pass}}
 
   <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
@@ -23,6 +23,7 @@
       z-index: 9999 !important;
   }
   .navbar {
+      padding-top:10px;
       margin-bottom: 0px;
       min-height:70px;
   }
