@@ -31,9 +31,9 @@ def index():
     return dict()
 
 def login():
-    form=FORM('Login:', BR(),INPUT(_name='name',_class='form-control',_placeholder='Admin name',requires=IS_IN_DB(db,db.users.username)),BR(),
-        INPUT(_name='password',_type='password',_class='form-control',_placeholder='Password',requires=IS_IN_DB(db,db.users.password)),BR(),
-        INPUT(_type='submit',_class='btn btn-default',_value='login'))
+    form=FORM(LABEL('Name:',_for="name"),INPUT(_name='name',_class='form-control input-lg',_placeholder='Name',requires=IS_IN_DB(db,db.users.username)),BR(),
+        LABEL("Password:",_for="password"),INPUT(_name='password',_type='password',_class='form-control input-lg',_placeholder='Password',requires=IS_IN_DB(db,db.users.password)),BR(),
+        BR(),INPUT(_type='submit',_class='btn btn-primary btn-lg btn-block',_value='Login'))
     message = ''
     #form = SQLFORM(db.users)
     if form.validate():
