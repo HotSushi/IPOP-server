@@ -17,14 +17,12 @@ var data = ["#admindetails","#vpndetails","#addnodes","#finished"]
 var cur_view=0;
 function next(next){
     //ON submit
-    /*
-    if(cur_view == data.length-1 && next){
-        $('#progress-bar').css('width',100 + '%'); 
-        $('#progress-bar').css('width',cur_view*100/3 + '%');
-        fillJid() 
-        $('#mainform').submit()
+    
+    //Second last view
+    if(cur_view == data.length-2 && next){
+        fillJid()
+        put_json()
     }
-    */
     if(next && cur_view<data.length-1){
         cur_view+=1
         changeView()
@@ -56,7 +54,7 @@ function addlistitem(){
         table_counter += 1
         tableentryid.push(table_counter)
         //$("#xmppjidlist").append( "<li>" + jid + "  :  " + jidp + "  :  " + jidip + "  :  " + jidh + "</li>")
-        var tablestrut = "<tr id='tableentry_"+(table_counter)+"'><td><a onclick=removelistitem("+jids.indexOf(jid)+")><span class='glyphicon glyphicon-minus'></span></a></td><td>"+jid+"</td><td>"+jidp+"</td><td>"+jidp+"</td><td>"+jidh+"</td></tr>"
+        var tablestrut = "<tr id='tableentry_"+(table_counter)+"'><td><a onclick=removelistitem("+jids.indexOf(jid)+")><span class='glyphicon glyphicon-minus'></span></a></td><td>"+jid+"</td><td>"+jidp+"</td><td>"+jidip+"</td><td>"+jidh+"</td></tr>"
         $("#tablebody").append(tablestrut)
     }
 }
@@ -87,6 +85,21 @@ function fillJid(){
     $("#xmppip").val(tempip.trim())
     $("#xmpphost").val(temph.trim())
 }
+
+function put_json(){
+    $.getJSON("http://127.0.0.1:8000{{=URL('put.json')}}?" + $("#mainform").serialize(), data,function(result){
+        if (result.json.return_code != 0){
+             alert("Error:"+result.json.msg);
+             $('#progress-bar').css('width','0%');
+        }
+        else{
+            alert("Success");
+            $('#progress-bar').css('width','100%');
+        
+        }
+    });
+}
+
 function register_ejabberd(){
     data = {
         no_of_nodes:$('#no_of_nodes').val(),
@@ -189,7 +202,7 @@ function register_ejabberd(){
 
         </div>
 
-            <input class='btn btn-default btn-lg' type="button" value="Previous" onclick="next(false);"/>
+            <input class='btn btn-default btn-lg' type="button" value="back" onclick="next(false);"/>
             <input class='btn btn-default btn-lg' type="button" value="next" style="float:right;"onclick="next(true);"/>
 
 
@@ -215,12 +228,13 @@ function register_ejabberd(){
         </form>
     </div>
 
-    <div class='col-sm-4' style="background-color:#673ab7;height:800px">
+    <div class='col-sm-4' style="background-color:#673ab7;height:800px;">
         <div>
             <div class="page-header">
                 <h2 style="color:white;">Node list</h2>
             </div>
-                <table class="table table-striped">
+            <div class="scroll" style="height: 500px;overflow: auto;">           
+                <table class="table table-striped" style="font-size:20px; color:white;">
                 <thead>
                   <tr>
                     <th></th>
@@ -233,9 +247,7 @@ function register_ejabberd(){
                 <tbody id="tablebody">
                 </tbody>
               </table>
-                    <ul id="xmppjidlist" style="list-style-type:none;display:none">
-                    <li><b>Xmpp JID  :  Password  :  IP  :  Xmpp Host</b></li>
-                </ul>
+            </div>
 
 
         </div>

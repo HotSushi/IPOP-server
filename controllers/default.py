@@ -120,15 +120,25 @@ def editgvpn():
 
 def put():
     vars = request.get_vars
+    # return error if any of the vars were not passed
+    for ele in [vars['vpnname'],vars['adminjid'],vars['adminpw'],vars['subnet']]:
+        if not ele :
+            return dict(json ={'return_code':2,'msg':'Some arguments were not passed'})
+    
     is_admingvpn = vars['isadmingvpn'] or 'no'
-    id = db.vpn.insert(vpn_name=vars['vpnname'],description="none",admin_jid=vars['adminjid'],admin_password=vars['adminpw'],ipv4_mask=vars['subnet'],ejabberd_password=vars['xmpp_host_password'],is_admingvpn=is_admingvpn)
     xids = vars['xmppid'].split(" ")
     xidp = vars['xmpppw'].split(" ")
     nodeip = vars['nodeip'].split(" ")
     xidh = vars['xmpphost'].split(" ")
-    for i in range(len(xids)):
-        db.xmpnode.insert(jid=xids[i],password=xidp[i],ip=nodeip[i],xmpp_host=xidh[i],status="stopped",vpn_id=id)
-    return dict(request.get_vars)
+
+    try:
+        id = db.vpn.insert(vpn_name=vars['vpnname'],description="none",admin_jid=vars['adminjid'],admin_password=vars['adminpw'],ipv4_mask=vars['subnet'],ejabberd_password=vars['xmpp_host_password'],is_admingvpn=is_admingvpn)
+        for i in range(len(xids)):
+            db.xmpnode.insert(jid=xids[i],password=xidp[i],ip=nodeip[i],xmpp_host=xidh[i],status="stopped",vpn_id=id)
+    except ValueError as er:
+        return dict(json={'return_code':2,'msg':str(er)})
+        
+    return dict(json={'return_code':0,'msg':'successfully added'})
 
 def delet():
     vars = request.get_vars
