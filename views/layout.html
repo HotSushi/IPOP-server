@@ -55,7 +55,15 @@
       <ul class="nav navbar-nav">
 
         {{for entry in response.menu:}}
-            <li><a href="{{=entry[2]}}"><span class='{{=entry[4]}}'></span>{{=entry[0]}}</a></li>
+            <li> 
+                <a href="{{=entry[2]}}">
+                <!--if glyphicon present-->
+                {{if len(entry)>=4:}}
+                    <span class='{{=entry[4]}}'></span>
+                {{pass}}
+                {{=entry[0]}}
+                </a>
+            </li>
         {{pass}}
 
 
