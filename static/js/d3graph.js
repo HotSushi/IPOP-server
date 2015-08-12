@@ -73,9 +73,8 @@ function creategraph(graphdata,selector){
         .data(graphdata.links)
         .enter().append("line")
         .attr("class", "link")
-        .style("stroke-width", function (d) {
-        return Math.sqrt(d.value);
-    });
+        .style("stroke", "white")
+        .style("stroke-width", 8);
 
     //Do the same with the circles for the nodes - no 
     //Changed

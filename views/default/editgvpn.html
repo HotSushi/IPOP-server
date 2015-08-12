@@ -68,17 +68,47 @@
 
 
 
-<div class="page-header">
+
+
+<div class="container-fluid row" style="background-color:#673ab7;color:#fff;height:300px;">
+  <div class="page-header">
         <h1>Edit VPN</h1>      
+   </div>
+
+  <h3>Scroll to your VPN</h3>
+  <p>stop, edit ip, delete a node</p>
+  <p>click on the node graph to get the monitoring info/ log files</p>
+</div>
+
+<div class="row">
+<nav class="navbar navbar-default" data-spy="affix" data-offset-top="197">
+  <div class="container-fluid">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>                        
+      </button>
+      <a class="navbar-brand" href="#">Edit</a>
+    </div>
+      <div class="collapse navbar-collapse" id="myNavbar">
+        <ul class="nav navbar-nav">
+            {{for i in range(1,len(json)+1):}}
+                <li><a href="#vpn_{{=json[i]['vpn_name']}}">{{=json[i]['vpn_name'].capitalize()}}</a></li>
+            {{pass}}
+        </ul>
+      </div>
+  </div>
+</nav>  
 </div>
 
 
 {{colors = ['#1E88E5','#ff9800','#00bcd4','#009688','#ff9800','#673ab7']}}
 {{for i in range(1,len(json)+1):}}
 
-    <div style="padding:25px; padding-top:50px; background-color: {{=colors[i%len(colors)]}} ">
+    <div id="vpn_{{=json[i]['vpn_name']}}" class="row container-fluid" style="padding:25px; padding-top:50px; background-color: {{=colors[i%len(colors)]}} ">
        <div class="page-header">
-          <h1>{{=json[i]['vpn_name']}}</h1>
+          <h1>{{=json[i]['vpn_name'].capitalize()}}</h1>
        </div>
 
        <div class="row container-fluid">     
@@ -119,7 +149,7 @@
                                 </td>
                                 <td><a><span class="glyphicon glyphicon-stop" onclick="stopvpn( '{{= nodes[j]['jid'] }}' )" style="font-size:20px;color:black"></span></a></td> 
                                 <td><a><span class="glyphicon glyphicon-edit" onclick="changeip( '{{= nodes[j]['jid'] }}' )" style="font-size:20px;color:blue"></span></a></td> 
-                                <td><a><span class="glyphicon glyphicon-trash" onclick="delet( '{{= nodes[j]['jid'] }}' )' )" style="font-size:20px;color:#6600CC"></span></a></td> 
+                                <td><a><span class="glyphicon glyphicon-trash" onclick="delet( '{{= nodes[j]['jid'] }}'  )" style="font-size:20px;color:#6600CC"></span></a></td> 
                             </tr>      
                             
                         {{pass}}
@@ -130,7 +160,3 @@
 
 {{pass}}
 
-
-<script>
-    document.body.style.backgroundColor = "#673ab7"; 
-</script>
