@@ -1,4 +1,45 @@
 {{extend 'layout.html'}}
+
+<script>
+function switch_file(i)
+{
+    $("#log_container").children().css({"display":"none"});
+    $("#log_"+i).css({"display":"block"})
+}
+</script>
+
+<div class="row container-fluid page-header">
+    <h1>Logs</h1>      
+</div>
+
+{{if not json:}}
+
+<div class="row container-fluid">
+    <h3> Sorry there were no log files for {{=request.get_vars['node']}}</h3>
+</div>
+
+{{else:}}
+<div class="row container-fluid">
+    {{i=0}}
+    <div class='col-sm-2' style="background-color:#009688;height:800px">
+        {{for each_log in json:}}
+            {{i+=1}}
+                <button id="trigger_{{=i}}" onclick="switch_file({{=i}});">{{=each_log.name}}</button>
+        {{pass}}
+    </div>
+    <!-- seperate column fill -->
+    {{i=0}}
+    <div id="log_container" class="col-sm-10" style="background-color:#673ab7;height:800px;overflow:auto;">
+        {{for each_log in json:}}
+            {{i+=1}}
+                <div id="log_{{=i}}">
+                    {{=each_log.log}}
+                </div>        
+        {{pass}}
+    </div>
+</div>
+{{pass}}
+<!--
 <h1>{{=request.get_vars['node']}}</h1>
 {{if not json:}}
     <h3> Could not fetch Log file</h3>
@@ -11,3 +52,4 @@
         <br>
     {{pass}}    
 {{pass}}
+-->
