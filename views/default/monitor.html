@@ -1,43 +1,84 @@
 {{extend 'layout.html'}}
 <script>
-function changeValues(){
-    $("#duration").val($("#graphtime").val());
+function changeValues(time){
+    $("#duration").val(time);//$("#graphtime").val());
     $('#graph_form').submit();
  }
 </script>
+<style>
+.centralized {
+    width: 30%;
+    margin: 0 auto;
+    }
+</style>
+<div class="row container-fluid">
+    <div class="page-header">
+        <h1 style="text-align:left;">Monitor</h1>
+         <h2 style="text-align:right;">
+            <a href="{{=URL('log')+'?node='+request.get_vars['xmppid']}}"> Logs <span class="glyphicon glyphicon-file"></span></a>
+        </h2>
+   </div>
 
-<div>
-    <h1>Monitor your nodes</h1>
     <div class="graphview" >
-        Select graph duration:
-        <select id="graphtime">
-                <option value="hour">1 Hour</option>
-                <option value="2hr">2 Hours</option>
-                <option value="5hr">5 Hours</option>
-                <option value="day">Day</option>
-                <option value="week">Week</option>
-                <option value="month">Month</option>
-                <option value="year">Year</option>
-        </select>
-        <form id="graph_form" style="display:none">
-          <input id="duration" name="duration" value="hour">
-          <input name="xmppid" value="{{=request.get_vars['xmppid']}}">
-        </form>
-        <div>
-            {{for i in range(len(json)):}}
-                <figure style="float:left">
-                    <img src="{{= json[i]['url'] }}">
-                    <figcaption>{{=json[i]['title']}}</figcaption>
-                </figure>
-            {{pass}}
+        <h3 style="text-align:center;">Select graph duration</h3>
+    </div>
+</div>
+
+<div class="row container-fluid" style="width: 8%;margin: 0 auto;">
+    <div id="time_dropdown" class="dropdown">
+    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Time
+    <span class="caret"></span></button>
+    <ul class="dropdown-menu">
+            <li time="hour"><a href="#">1 Hour</a></li>
+            <li time="2hr"><a href="#">2 Hours</a></li>
+            <li time="5hr"><a href="#">5 Hours</a></li>
+            <li time="day"><a href="#">Day</a></li>
+            <li time="week"><a href="#">Week</a></li>
+            <li time="month"><a href="#">Month</a></li>
+            <li time="year"><a href="#">Year</a></li>
+    </ul>
+  </div>
+</div>
+<br><br>
+<form id="graph_form" style="display:none">
+  <input id="duration" name="duration" value="hour">
+  <input name="xmppid" value="{{=request.get_vars['xmppid']}}">
+</form>
+
+
+{{for i in range(len(json)):}}
+    <div class="row container-fluid" style="background-color:#E87B13;padding:30px;height:250px;">
+        <div class='col-sm-5'>
+            <h3>{{=json[i]['title']}}</h3>
+        </div>
+
+        <div class='col-sm-2'></div>
+
+        <div class='col-sm-5'>
+            <figure>
+                <img src="{{= json[i]['url'] }}">
+            </figure>
         </div>
     </div>
     <br>
-    <a href="{{=URL('log')+'?node='+request.get_vars['xmppid']}}">Click to see log files</a>
-</div>
+{{pass}}
+
+
 
 <script>
-$( "#graphtime" ).on( "change",changeValues);
+document.body.style.background = '#E8A42F';
+document.body.style.color = '#007CFF';
+$("#time_dropdown .dropdown-menu li").click(function(){
+
+      $(".btn:first-child").text($(this).text());
+      $(".btn:first-child").val($(this).text());
+      changeValues($(this).attr('time'))
+   });
+$("#time_dropdown .dropdown-menu li").each(function(){
+     if($(this).attr('time')=='{{=request.get_vars['duration']}}'){
+        $(".btn:first-child").text(  $(this).text());
+     }
+   });
 </script>
 
 
