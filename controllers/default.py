@@ -90,6 +90,9 @@ def monitor():
 def creategvpn():
     return dict()
 
+def createbatchgvpn():
+    return dict()
+
 def editgvpn():
     json = {}
     j = 0

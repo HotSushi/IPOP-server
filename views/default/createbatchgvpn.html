@@ -1,0 +1,253 @@
+{{extend 'layout.html'}}
+<style>
+  .table-striped > tbody > tr:nth-child(2n+1) > td, .table-striped > tbody > tr:nth-child(2n+1) > th {
+   background-color: #1E88E5;
+}
+
+</style>
+
+<script>
+var jids = []
+var jidpws = []
+var ips = []
+var jidhost = []
+var tableentryid = []
+
+var data = ["#admindetails","#vpndetails","#addnodes","#finished"]
+var cur_view=0;
+function next(next){
+    //ON submit
+    //Second last view
+    if(cur_view == data.length-2 && next){
+        fillJid()
+        put_json()
+    }
+    if(next && cur_view<data.length-1){
+        cur_view+=1
+        changeView()
+    }
+    else if(!next && cur_view>0){
+        cur_view-=1
+        changeView()
+    }
+}
+function changeView(){
+    $('#progress-bar').css('width',cur_view*100/3 + '%');
+    for(i=0; i<data.length; i++){
+        $(data[i]).hide();
+    }
+    $(data[cur_view]).show();
+}
+
+var table_counter = 0
+function addlistitem(){
+    jid = $("#xmppidtxtbox").val()
+    jidp = $("#xmpppwtxtbox").val()
+    jidip = $("#xmppiptxtbox").val()
+    jidh = $("#xmpphtxtbox").val()
+    if(jids.indexOf(jid) == -1){
+        jids.push(jid)
+        jidpws.push(jidp)
+        jidhost.push(jidh)
+        ips.push(jidip)
+        table_counter += 1
+        tableentryid.push(table_counter)
+        //$("#xmppjidlist").append( "<li>" + jid + "  :  " + jidp + "  :  " + jidip + "  :  " + jidh + "</li>")
+        var tablestrut = "<tr id='tableentry_"+(table_counter)+"'><td><a onclick=removelistitem("+jids.indexOf(jid)+")><span class='glyphicon glyphicon-minus'></span></a></td><td>"+jid+"</td><td>"+jidp+"</td><td>"+jidip+"</td><td>"+jidh+"</td></tr>"
+        $("#tablebody").append(tablestrut)
+    }
+}
+
+function removelistitem(id){
+    $('#tableentry_'+tableentryid[id]).remove()
+    jids.splice(id,1)
+    jidpws.splice(id,1)
+    ips.splice(id,1)
+    jidhost.splice(id,1)
+    tableentryid.splice(id,1)
+}
+
+function fillJid(){
+    var tempj=""
+    var tempp=""
+    var tempip=""
+    var temph=""
+
+    for (i=0;i<jids.length;i++){
+        tempj += jids[i] + " "
+        tempp += jidpws[i] + " "
+        tempip += ips[i] + " "
+        temph += jidhost[i] + " "
+    }
+    $("#xmppid").val(tempj.trim())
+    $("#xmpppw").val(tempp.trim())
+    $("#xmppip").val(tempip.trim())
+    $("#xmpphost").val(temph.trim())
+}
+
+function put_json(){
+    $.getJSON("http://127.0.0.1:8000{{=URL('put.json')}}?" + $("#mainform").serialize(), data,function(result){
+        if (result.json.return_code != 0){
+             alert("Error:"+result.json.msg);
+             $('#progress-bar').css('width','0%');
+        }
+        else{
+            alert("Success");
+            $('#progress-bar').css('width','100%');
+        
+        }
+    });
+}
+
+function register_ejabberd(){
+    data_ = {
+        no_of_nodes:$('#no_of_nodes').val(),
+        xmpp_host:$('#xmpp_host').val(),
+        ip4:$('#ip4').val(),
+        vpnname:$('#vpnname').val(),
+        subnet:$('#subnet').val(),
+        xmpp_host_password:$('#xmpp_host_password').val()
+    }
+    $.getJSON("http://127.0.0.1:8000{{=URL('register_relationships.json')}}", data_,function(result){
+        if (result.json.return_code != 0){
+             alert("Error:"+result.json.msg);
+        }
+        else{
+            for (i=0;i<result.json.nodes.length;i++){
+                var node = result.json.nodes[i];
+                $("#xmppidtxtbox").val(node.xmpp_username);
+                $("#xmpppwtxtbox").val(node.xmpp_password);
+                $("#xmppiptxtbox").val(node.ip4);
+                $("#xmpphtxtbox").val(node.xmpp_host);
+                addlistitem()
+            }
+        }
+    });
+    }
+</script>
+<div class="row container-fluid" style="background-color:#1E88E5;">
+    <div class="col-sm-8" style="background-color:#1E88E5;min-height:800px">
+       
+       <div class="page-header">
+        <h1>Create VPN</h1>      
+      </div>
+
+     <form id="mainform" action='{{=URL("put.json")}}' method="GET">
+         
+         <div style="min-height:400px">   
+            <div id="admindetails">
+                <h3>Enter Admin Details</h3>
+                    <div class="jumbotron">
+                    <h3>Bootstrap Tutorial</h3>
+                    <p>Bootstrap is the most popular HTML, CSS, and JS framework for developing
+                    responsive, mobile-first projects on the web.</p>
+                  </div>
+                  <div class="form-group">
+                    <label for="adminjid">Admin Jabber ID:</label>
+                    <input name="adminjid" placeholder="ex. alice123@xmpp.jp" type="email" class="form-control">
+                  </div>
+                  <div class="form-group">
+                    <label for="adminpw">Admin Jabber Password:</label>
+                    <input type="password" class="form-control" name="adminpw">
+                  </div>
+            </div>
+
+            <div id="vpndetails">
+                <h3>Enter VPN Details</h3>
+                  <div class="form-group">
+                    <label for="vpnname">VPN Name:</label>
+                    <input name="vpnname" id="vpnname" placeholder="no spaces" class="form-control">
+                  </div>
+                  <div class="form-group">
+                    <label for="subnet">IPV4 Mask:</label>
+                    <input id="subnet" class="form-control" name="subnet">
+                  </div>
+            </div>
+
+            <div style="display:none">
+                <input id="xmppid" name="xmppid" type="text"/>
+                <input id="xmpppw" name="xmpppw" type="text" />
+                <input id="xmppip" name="nodeip" type="text" />
+                <input id="xmpphost" name="xmpphost" type="text"/>
+                
+                <input id="xmppidtxtbox" type="text" >
+                <input id="xmpppwtxtbox" type="text" >
+                <input id="xmpphtxtbox" type="text" >
+                <input id="xmppiptxtbox" type="text" >
+            </div>
+
+            <div id="addnodes">
+                <h3>Add Nodes in bulk</h3>
+                    <p>this requires ejabberd server as xmpp host, relationships and configuration files will be automatically generated</p>
+                  <div class="form-group">
+                    <label for="no_of_nodes">Enter Number of nodes:</label>
+                    <input id="no_of_nodes" class="form-control" name="no_of_nodes" type="number" min="1" step="1" />
+                  </div>
+                  <div class="form-group">
+                    <label for="xmpp_host">Enter IP of ejabberd server:</label>
+                    <input id="xmpp_host" class="form-control" name="xmpp_host" type="text"/>
+                  </div>
+                  <div class="form-group">
+                    <label for="xmpp_host_password">Enter Admin password of ejabberd server:</label>
+                    <input id="xmpp_host_password" class="form-control" name="xmpp_host_password" type="password"/>
+                  </div>
+                  <div class="form-group">
+                    <label for="ip4">Enter IP Space:</label>
+                    <input id="ip4" name="ip4" type="text" class="form-control"/>
+                  </div>
+                <input class='btn btn-primary btn-lg btn-block' type="button" value="Generate" onclick="register_ejabberd()"/>
+                
+            </div>
+
+            <div id="finished">
+                <div class="jumbotron">
+                 <h1><span class="glyphicon glyphicon-ok" style="font-size: 50px;"></span></h1>
+                </div>
+            </div>
+
+        </div>
+
+           
+
+            <div class="progress" style="margin-top:10%;">
+              <div id="progress-bar" class="progress-bar progress-bar-info progress-bar-striped" role="progressbar"
+              aria-valuenow="2" aria-valuemin="0" aria-valuemax="3" style="width:50%;">
+              </div>
+            </div>
+
+            <input class='btn btn-default btn-lg' type="button" value="back" onclick="next(false);"/>
+            <input class='btn btn-default btn-lg' type="button" value="next" style="float:right;"onclick="next(true);"/>
+
+        </form>
+    </div>
+
+    <div class='col-sm-4' style="background-color:#673ab7;height:800px;">
+        <div>
+            <div class="page-header">
+                <h2 style="color:white;">Node list</h2>
+            </div>
+            <div class="scroll" style="height: 500px;overflow: auto;">           
+                <table class="table table-striped" style="font-size:20px; color:white;">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>XMPP ID</th>
+                    <th>XMPP Password</th>
+                    <th>IP</th>
+                    <th>XMPP Host</th>
+                  </tr>
+                </thead>
+                <tbody id="tablebody">
+                </tbody>
+              </table>
+            </div>
+
+
+        </div>
+        
+    </div>
+</div>
+<script>
+changeView()
+</script>
+
