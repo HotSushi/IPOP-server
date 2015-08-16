@@ -1,19 +1,72 @@
 {{extend 'layout.html'}}
+<style>
+  .table-striped > tbody > tr:nth-child(2n+1) > td, .table-striped > tbody > tr:nth-child(2n+1) > th {
+   background-color: #1E88E5;
+}
+
+</style>
+
 <script>
 var jids = []
 var jidpws = []
 var ips = []
 var jidhost = []
+var tableentryid = []
 
+var data = ["#admindetails","#vpndetails","#addnodes","#finished"]
+var cur_view=0;
+function next(next){
+    //ON submit
+    
+    //Second last view
+    if(cur_view == data.length-2 && next){
+        fillJid();
+        createroom();
+    }
+    else if(next && cur_view<data.length-1){
+        cur_view+=1
+        changeView()
+    }
+    else if(!next && cur_view>0){
+        cur_view-=1
+        changeView()
+    }
+}
+
+function setStatus(msg){
+    $('#progress-bar').text(msg);
+} 
+
+function changeView(){
+    $('#progress-bar').css('width',cur_view*100/5 + '%');
+    for(i=0; i<data.length; i++){
+        $(data[i]).hide();
+    }
+    $(data[cur_view]).show();
+}
+
+var table_counter = 0
 function addlistitem(){
     jid = $("#xmppidtxtbox").val()
     jidp = $("#xmpppwtxtbox").val()
     if(jids.indexOf(jid) == -1){
         jids.push(jid)
         jidpws.push(jidp)
-        $("#xmppjidlist").append( "<li>" + jid + "  :  " + jidp +"</li>")
+        table_counter += 1
+        tableentryid.push(table_counter)
+        //$("#xmppjidlist").append( "<li>" + jid + "  :  " + jidp + "  :  " + jidip + "  :  " + jidh + "</li>")
+        var tablestrut = "<tr id='tableentry_"+(table_counter)+"'><td><a onclick=removelistitem("+jids.indexOf(jid)+")><span class='glyphicon glyphicon-minus'></span></a></td><td>"+jid+"</td><td>"+jidp+"</td></tr>"
+        $("#tablebody").append(tablestrut)
     }
 }
+
+function removelistitem(id){
+    $('#tableentry_'+tableentryid[id]).remove()
+    jids.splice(id,1)
+    jidpws.splice(id,1)
+    tableentryid.splice(id,1)
+}
+
 
 function fillJid(){
     var tempj=""
@@ -25,27 +78,32 @@ function fillJid(){
     }
     $("#xmppid").val(tempj.trim())
     $("#xmpppw").val(tempp.trim())
-    createroom()
 }
+
 function createroom(){
-    data = $("form").serialize()
-    $.getJSON("http://127.0.0.1:8000{{=URL('admingvpn.json')}}", data+'&type=create',function(result){
+    $('#progress-bar').addClass('active')
+    _data = $("form").serialize()
+    $.getJSON("http://127.0.0.1:8000{{=URL('admingvpn.json')}}", _data+'&type=create',function(result){
         if (result.json.return_code != 0){
-             alert("Error:"+result.json.msg);
+              show_error_msg(result.json.msg);
         }
         else{
+            $('#progress-bar').css('width',3*100/5 + '%');
+            setStatus("Room created Successfully")
             inviteroom();
         }
     });
 }
 
 function inviteroom(){
-    data = $("form").serialize()
-    $.getJSON("http://127.0.0.1:8000{{=URL('admingvpn.json')}}", data+'&type=invite',function(result){
+    _data = $("form").serialize()
+    $.getJSON("http://127.0.0.1:8000{{=URL('admingvpn.json')}}", _data+'&type=invite',function(result){
         if (result.json.return_code != 0){
-             alert("Error:"+result.json.msg);
+              show_error_msg(result.json.msg);
         }
         else{
+            $('#progress-bar').css('width',4*100/5 + '%');
+            setStatus("Participants Invited")
             create(result.json.msg);
         }
     });
@@ -60,49 +118,173 @@ function create(jsonobj){
         xip += val + " " 
         xh += $('#xmpphost').val() + " "
     });
-    data = {
+    _data = {
         adminjid:$('#adminjid').val(),
         adminpw:$('#adminpw').val(),
         vpnname:$('#vpnname').val(),
-        subnet:24,
+        subnet:$('#ip4mask').val(),
         xmppid:$("#xmppid").val(),
         xmpppw:$("#xmpppw").val(),
         nodeip:xip.trim(),
         xmpphost:xh.trim(),
         isadmingvpn:'yes'
     }
-    window.location = "http://127.0.0.1:8000{{=URL('put.json')}}?" + $.param( data )
+    $.getJSON("http://127.0.0.1:8000{{=URL('put.json')}}?" + $.param(_data ),{},function(result){
+        if (result.json.return_code != 0){
+             show_error_msg(result.json.msg);
+             
+        }
+        else{
+            show_error_msg("");
+            setStatus("VPN created Successfully")
+            cur_view=data.length-1
+            changeView()
+            $('#progress-bar').css('width','100%');
+        }
+    });
 }
 
-</script>
-<h1>Create VPN</h1>
-<form action='{{=URL("admingvpn.json")}}' method="GET">
-    XMPP details required for security purpose:<br>
-    Admin JID: <input id="adminjid" name="admin_jid" type="text" placeholder="ex. alice123@xmpp.jp" /><br>
-    Admin Password: <input id="adminpw" name="admin_password" type="password" placeholder="password" /><br><br>
-    XMPP Host: <input id="xmpphost" name="xmpp_host" type="text"/>
-    
-    VPN details:<br>
-    VPN Name :  <input id="vpnname" name="vpnname" type="text" placeholder="ex. Sushant" /><br>
-    IPv4 Space : <input id="ipspace" name="ipspace" type="text" placeholder="ex. 24" /><br>
-    <input id="xmppid" name="jids" type="text" style="display: none;"/>
-    <input id="xmpppw" name="pwds" type="text" style="display: none;"/>
-    <br><br>
 
-    <h3>Add Nodes One by one</h3>
-    <div id="addnodes">
-        <input id="xmppidtxtbox" type="text" placeholder="Enter XMPP JID" />
-        <input id="xmpppwtxtbox" type="text" placeholder="Enter XMPP password" />
-        <input type="button" value="Add Node" onclick="addlistitem()"/>
-        <br><br>
+
+function show_error_msg(msg){
+    $('#progress-bar').removeClass('active')
+    $('#error_span').text(msg);
+    $('#progress-bar').css('width','0%');
+     cur_view = 1;
+     next(false);
+}
+function put_json(){
+    _data = {}
+    $.getJSON("http://127.0.0.1:8000{{=URL('put.json')}}?" + $("#mainform").serialize(),_data,function(result){
+        if (result.json.return_code != 0){
+             show_error_msg(result.json.msg);
+             $('#progress-bar').css('width','0%');
+             cur_view = 1;
+             next(false);
+        }
+        else{
+            show_error_msg("");
+            $('#progress-bar').css('width','100%');
         
+        }
+    });
+}
+
+
+</script>
+<div class="row container-fluid" style="background-color:#1E88E5;">
+    <div class="col-sm-8" style="background-color:#1E88E5;min-height:800px">
+       
+       <div class="page-header">
+        <h1>Create VPN</h1>     
+         <h3><span id="error_span" class="label label-danger"></span></h3> 
+      </div>
+
+     <form id="mainform" action='{{=URL("put.json")}}' method="GET">
+         
+         <div style="min-height:400px">   
+            <div id="admindetails">
+                <h3>Enter Admin Details</h3>
+                    <div class="jumbotron">
+                    <h3>Bootstrap Tutorial</h3>
+                    <p>Bootstrap is the most popular HTML, CSS, and JS framework for developing
+                    responsive, mobile-first projects on the web.</p>
+                  </div>
+                  <div class="form-group">
+                    <label for="admin_jid">Admin Jabber ID:</label>
+                    <input id="adminjid" name="admin_jid" type="email" class="form-control">
+                  </div>
+                  <div class="form-group">
+                    <label for="admin_password">Admin Jabber Password:</label>
+                    <input id="adminpw" type="password" class="form-control" name="admin_password">
+                  </div>
+            </div>
+
+            <div id="vpndetails">
+                <h3>Enter VPN Details</h3>
+                  <div class="form-group">
+                    <label for="vpnname">VPN Name:</label>
+                    <input name="vpnname" id="vpnname" placeholder="no spaces" class="form-control">
+                  </div>
+                  <div class="form-group">
+                    <label for="ip4mask">IPV4 Mask:</label>
+                    <input class="form-control" id="ip4mask"name="ip4mask">
+                  </div>
+                  <div class="form-group">
+                    <label for="xmpp_host">XMPP Host:</label>
+                    <input id="xmpphost" class="form-control" name="xmpp_host">
+                  </div>
+                   <div class="form-group">
+                    <label for="ipspace">IP Space:</label>
+                    <input id="ipspace" class="form-control" name="ipspace">
+                  </div>
+                
+            </div>
+
+            <input id="xmppid" name="jids" type="text" style="display: none;"/>
+            <input id="xmpppw" name="pwds" type="text" style="display: none;"/>
+
+            <div id="addnodes">
+                <h3>Add nodes</h3>
+                  <div class="form-group">
+                    <label for="xmppidtxtbox">Enter XMPP JID:</label>
+                    <input id="xmppidtxtbox" type="text" class="form-control">
+                  </div>
+                  <div class="form-group">
+                    <label for="xmpppwtxtbox">Enter XMPP Password:</label>
+                    <input id="xmpppwtxtbox" type="text" class="form-control">
+                  </div>
+                <input class='btn btn-primary btn-lg btn-block' type="button" value="Add Node" onclick="addlistitem()"/>
+            </div>
+
+            <div id="finished">
+                <div class="jumbotron">
+                 <h1><span class="glyphicon glyphicon-ok" style="font-size: 50px;"></span></h1>
+                </div>
+            </div>
+
+        </div>
+
+           
+
+            <div class="progress" style="margin-top:10%;">
+              <div id="progress-bar" class="progress-bar progress-bar-info progress-bar-striped" role="progressbar"
+              aria-valuenow="2" aria-valuemin="0" aria-valuemax="3" style="width:50%;">
+              </div>
+            </div>
+
+            <input class='btn btn-default btn-lg' type="button" value="back" onclick="next(false);"/>
+            <input class='btn btn-default btn-lg' type="button" value="next" style="float:right;"onclick="next(true);"/>
+
+
+        </form>
     </div>
 
-    <h3>JID list:</h3>
-        <ul id="xmppjidlist" style="list-style-type:none">
-            <li><b>Xmpp JID  :  Password</b></li>
-        </ul>
+    <div class='col-sm-4' style="background-color:#673ab7;height:800px;">
+        <div>
+            <div class="page-header">
+                <h2 style="color:white;">Node list</h2>
+            </div>
+            <div class="scroll" style="height: 500px;overflow: auto;">           
+                <table class="table table-striped" style="font-size:20px; color:white;">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>XMPP ID</th>
+                    <th>XMPP Password</th>
+                  </tr>
+                </thead>
+                <tbody id="tablebody">
+                </tbody>
+              </table>
+            </div>
 
-    <input type="button" value="Create" onclick="fillJid();createroom();"/>
-</form>
+
+        </div>
+        
+    </div>
+</div>
+<script>
+changeView()
+</script>
 

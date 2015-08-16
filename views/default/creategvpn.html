@@ -86,14 +86,20 @@ function fillJid(){
     $("#xmpphost").val(temph.trim())
 }
 
+function show_error_msg(msg){
+    $('#error_span').text(msg);
+}
 function put_json(){
-    $.getJSON("http://127.0.0.1:8000{{=URL('put.json')}}?" + $("#mainform").serialize(), data,function(result){
+    _data = {}
+    $.getJSON("http://127.0.0.1:8000{{=URL('put.json')}}?" + $("#mainform").serialize(),_data,function(result){
         if (result.json.return_code != 0){
-             alert("Error:"+result.json.msg);
+             show_error_msg(result.json.msg);
              $('#progress-bar').css('width','0%');
+             cur_view = 1;
+             next(false);
         }
         else{
-            alert("Success");
+            show_error_msg("");
             $('#progress-bar').css('width','100%');
         
         }
@@ -131,7 +137,8 @@ function register_ejabberd(){
     <div class="col-sm-8" style="background-color:#1E88E5;min-height:800px">
        
        <div class="page-header">
-        <h1>Create VPN</h1>      
+        <h1>Create VPN</h1>     
+         <h3><span id="error_span" class="label label-danger"></span></h3> 
       </div>
 
      <form id="mainform" action='{{=URL("put.json")}}' method="GET">

@@ -263,8 +263,10 @@ def unregister_relationship():
 def admingvpn():
     vars = request.get_vars
     admin_jid,admin_pw,xmpp_host,vpn_name,ipspace = vars['admin_jid'],vars['admin_password'],vars['xmpp_host'], vars['vpnname'], vars['ipspace'] 
-    if vpn_name:
-        vpn_name = vpn_name.lower()
+    for ele in [admin_jid,admin_pw,xmpp_host,vpn_name,ipspace]:
+        if not ele :
+            return dict(json={'return_code':2,'msg':'Some arguments were not passed'})
+    vpn_name = vpn_name.lower()
     if vars['type'] == 'create':
         # create muc room
         try:

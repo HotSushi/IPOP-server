@@ -20,10 +20,10 @@ def create_room(adminjid, password, xmpphost, vpnname):
     p = subprocess.Popen(args, cwd=CWD, stdout=subprocess.PIPE)
     if p.wait() != 0:
         removeDir(vpnname)
-        raise ValueError('Error: while creating room')
+        raise ValueError('Error occurred while creating room')
     if 'Success' not in p.stdout.read():
         removeDir(vpnname)
-        raise ValueError('Error: data in form incorrect')
+        raise ValueError('Data provided is incorrect, make sure admin jid is accessible')
     return 0
 
 def manage_room(arg, arg_desc):
@@ -32,7 +32,7 @@ def manage_room(arg, arg_desc):
             DIR+'config.ini',  arg, arg_desc]
     p = subprocess.Popen(args, cwd=CWD, stdout=subprocess.PIPE)
     if p.wait() != 0:
-        raise ValueError('Error: while managing room')
+        raise ValueError('Error occurred while managing room')
     # if invite type extract ip allocation
     if arg == '-i':
         ip_alloc = {}
