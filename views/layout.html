@@ -60,6 +60,7 @@
       <ul class="nav navbar-nav">
 
         {{for entry in response.menu:}}
+            {{if entry[2] != None:}} 
             <li> 
                 <a href="{{=entry[2]}}">
                 <!--if glyphicon present-->
@@ -69,6 +70,23 @@
                 {{=entry[0]}}
                 </a>
             </li>
+
+            {{else:}}
+
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                <span class='{{=entry[4]}}'></span>
+                {{=entry[0]}}
+                <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    {{for ele in entry[5]:}}
+                    <li>
+                        <a href="{{=ele[1]}}">{{=ele[0]}}</a>
+                    </li>
+                    {{pass}}
+                </ul>
+            </li>
+            {{pass}}
         {{pass}}
 
 

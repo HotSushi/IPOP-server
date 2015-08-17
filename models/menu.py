@@ -26,7 +26,12 @@ response.google_analytics_id = None
 
 response.menu = [
     (T('Home'), False, URL('default', 'index'), [], "glyphicon glyphicon-home"),
-    (T('Create'), False, URL('default', 'creategvpn'), [], "glyphicon glyphicon-pencil"),
+    (T('Create'), False, None, [], "glyphicon glyphicon-pencil",
+        [
+        (T('GVPN'),URL('default','creategvpn')),
+        (T('Admin-GVPN'),URL('default','admingvpn')),
+        (T('Batch-GVPN'), URL('default','createbatchgvpn'))
+        ]),
     (T('Edit'), False, URL('default', 'editgvpn'), [], "glyphicon glyphicon-pencil")
 ]
 
