@@ -7,22 +7,27 @@
     //networkmap click callback
    function ongraphclick(d) {
           if (d3.event.defaultPrevented) return; // ignore drag
+          //if node type is xmpp server than redirect to logs, if it is ipop node redirect to monitoring page 
           if(d.group == 0){
               uri = "node="+d.name;
-              window.location = "http://127.0.0.1:8000{{=URL('log')}}?"+encodeURI(uri);
+              window.location = "{{=URL('default','log')}}?"+encodeURI(uri);
            }
            else{
               uri = "xmppid="+d.name;
-              window.location = "http://127.0.0.1:8000{{=URL('monitor')}}?"+encodeURI(uri);
+              window.location = "{{=URL('default','monitor')}}?"+encodeURI(uri);
            }
     }
-    function delet(stringg){
-        var r = confirm("Are you sure you want to delete node: "+stringg+ "permanantly?");
+    function delet(stringg, is_running){
+        if (is_running == "True"){
+            alert("Sorry, the node is still running, please stop it before deleting");
+            return;
+        }
+        var r = confirm("Are you sure you want to delete node: "+stringg+ " permanantly?");
         if (r == false) {
             return;
         } 
        uri = "jids="+stringg;
-       var r = $.get( "http://127.0.0.1:8000{{=URL('delet')}}?"+encodeURI(uri));
+       var r = $.get( "{{=URL('default','delet')}}?"+encodeURI(uri));
    }
    function stopvpn(stringg){
        var r = confirm("Are you sure you want to stop node: "+stringg+ "?");
@@ -30,21 +35,21 @@
             return;
         } 
        uri = "type=stop&xmppid="+stringg;
-       var r = $.post( "http://127.0.0.1:8000{{=URL('sendtoclient')}}?"+encodeURI(uri));
+       var r = $.post( "{{=URL('default','sendtoclient')}}?"+encodeURI(uri));
    }
    function changeip(xmppid){
        ip = prompt("Please enter new IP","192.168.10.1")
        if (ip != null){
            uri = "type=change_ip&xmppid=" + xmppid + "&ip=" + ip;
-           $.post( "http://127.0.0.1:8000{{=URL('set')}}?"+encodeURI(uri));
-           $.post( "http://127.0.0.1:8000{{=URL('sendtoclient')}}?"+encodeURI(uri));
+           $.post( "{{=URL('default','set')}}?"+encodeURI(uri));
+           $.post( "{{=URL('default','sendtoclient')}}?"+encodeURI(uri));
        }
    }
 
    window.setInterval(reloader, 2000);
    var json_file = null;
    function reloader() {
-    $.getJSON("http://127.0.0.1:8000{{=URL('editgvpn.json')}}", function(result){
+    $.getJSON("{{=URL('default','editgvpn.json')}}", function(result){
         if(json_file == null){
             json_file = JSON.stringify(result);
         }
@@ -59,7 +64,7 @@
 
 //networkmap fetch data
 {{for i in range(1,len(json)+1):}}  
-    $.getJSON("http://127.0.0.1:8000{{= URL('getgraph.json?vpnid='+ str(json[i]['vpn_id'])) }}", function(result){
+    $.getJSON("{{=URL('default','getgraph.json?vpnid='+ str(json[i]['vpn_id'])) }}", function(result){
         creategraph(result,"#networkmap_{{=json[i]['vpn_id']}}");
     });
 {{pass}}
@@ -149,7 +154,10 @@
                                 </td>
                                 <td><a><span class="glyphicon glyphicon-stop" onclick="stopvpn( '{{= nodes[j]['jid'] }}' )" style="font-size:20px;color:black"></span></a></td> 
                                 <td><a><span class="glyphicon glyphicon-edit" onclick="changeip( '{{= nodes[j]['jid'] }}' )" style="font-size:20px;color:blue"></span></a></td> 
-                                <td><a><span class="glyphicon glyphicon-trash" onclick="delet( '{{= nodes[j]['jid'] }}'  )" style="font-size:20px;color:#6600CC"></span></a></td> 
+                                <td><a><span class="glyphicon glyphicon-trash" onclick="delet( 
+                                '{{= nodes[j]['jid'] }}',
+                                '{{= nodes[j]['status'] != "stopped"}}'  
+                                )" style="font-size:20px;color:#6600CC"></span></a></td> 
                             </tr>      
                             
                         {{pass}}

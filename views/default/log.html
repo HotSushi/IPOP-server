@@ -19,7 +19,7 @@ function switch_file(i)
 
 {{if not json:}}
 
-<div class="container-fluid">
+<div class="container-fluid" style="height:500px">
     {{if request.get_vars['node']:}}
         <h3> Sorry there were no log files for {{=request.get_vars['node']}}</h3>
     {{else:}}

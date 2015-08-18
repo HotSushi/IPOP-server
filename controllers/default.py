@@ -38,7 +38,7 @@ def login():
     #form = SQLFORM(db.users)
     if form.validate():
         session.logged_in_user = form.vars.name
-        redirect(URL(index))
+        redirect(URL(editgvpn))
     elif form.errors:
         form.errors.clear()
         message = "Please enter a valid username"
@@ -46,12 +46,6 @@ def login():
         response.flash  = "Please enter a valid username"
     return dict(form=form,message=message)
 
-def user():
-    return dict(form=auth())
-
-@cache.action()
-def download():
-    return response.download(request, db)
 
 
 def monitor():
@@ -390,7 +384,3 @@ def sendtoclient():
         serverxmpp.instance.change_ip(vars['xmppid'])
     elif vars['type'] == 'received_ack':
         serverxmpp.instance.send_key_ack(vars['xmppid'])
-
-
-def call():
-    return service()
