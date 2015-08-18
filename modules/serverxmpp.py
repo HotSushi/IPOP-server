@@ -56,16 +56,17 @@ class ServerXmppBot(ClientXMPP):
     def change_ip(self, client):
         self.send_message(mto = client, mbody = 'change_ip ')
 
-    
+initiated = False
 def init():
     global instance
     instance = ServerXmppBot('alice_sushant@xmpp.jp', 'alice123')
     instance.connect()
     instance.process(block=False)
+    initiated = True
 
 def change_instance(admin_jid,admin_password):
     global instance
-    if instance.get_admin_jid() == admin_jid:
+    if initiated and instance.get_admin_jid() == admin_jid:
         return
 
     print 'changed admin to '+ admin_jid
