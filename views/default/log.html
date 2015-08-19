@@ -8,6 +8,17 @@ function switch_file(i)
     $("#log_container").children().css({"display":"none"});
     $("#log_"+i).css({"display":"block"})
 }
+
+function delete_log(name_log){
+    _data = {
+        node: '{{=request.get_vars['node']}}',
+        name: name_log
+    }
+    $.getJSON("{{=URL('default','log.json')}}", $.param(_data )+'&type=del',function(result){
+         location.reload(); 
+    });
+}
+
 </script>
 
 <div class="container-fluid page-header">
@@ -47,7 +58,10 @@ function switch_file(i)
         {{for each_log in json:}}
             {{i+=1}}
             <div id="log_{{=i}}" style="height:100%;width:100%;display:none;">
-                <div class="page-header"><h2 style="color:white;">{{=each_log.name.capitalize()}}</h2></div>
+                <div class="page-header">
+                    <h2 style="color:white;">{{=each_log.name.capitalize()}}</h2>
+                    <h2 style="text-align:right;"><a><span class="glyphicon glyphicon-trash" onclick="delete_log('{{=each_log.name}}')"></span></a></h2>
+                </div>
                 <textarea style="background-color:transparent; color:white;height:80%;width:100%;">
                     {{=each_log.log}}
                 </textarea>

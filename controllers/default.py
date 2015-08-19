@@ -344,7 +344,10 @@ def log():
             db((db.logs.node == vars['node'])&(db.logs.name == vars['name'])).update(log = vars['log'] + existing_log)
         return 'success'
     elif vars['type'] == 'del':
-        pass
+        select_list = db((db.logs.node == vars['node'])&(db.logs.name == vars['name'])).select()
+        if len(select_list) !=0:
+            db((db.logs.node == vars['node'])&(db.logs.name == vars['name'])).update(log = ' ')    
+        return dict(json = 'success')
     else:
         select_list = db(db.logs.node == vars['node']).select()
         if len(select_list) ==0:
@@ -375,9 +378,17 @@ def sendtoclient():
     vars = request.get_vars
     #fix-this: a xmppid may have 2 or more admins (fix: pass vpn_id also)
     #switch to respective admin
-    vid = db(db.xmpnode.jid == vars['xmppid']).select()[0].vpn_id
-    admin_jid,admin_password = db.vpn[vid].admin_jid,db.vpn[vid].admin_password
-    serverxmpp.change_instance(admin_jid,admin_password)
+
+#    vid = db(db.xmpnode.jid == vars['xmppid']).select()[0].vpn_id
+#    admin_jid,admin_password = db.vpn[vid].admin_jid,db.vpn[vid].admin_password
+#    serverxmpp.change_instance(admin_jid,admin_password)
+
+    query = db(db.xmpnode.jid == vars['xmppid']).select()[0]
+    vid = query.vpn_id
+    xmpp_host = query.xmpp_host
+    admin_jid, admin_password = db.vpn[vid].admin_jid, db.vpn[vid].admin_password
+    print xmpp_host
+    serverxmpp.change_instance(admin_jid, admin_password, xmpp_host)
     if vars['type'] == 'stop':
         serverxmpp.instance.stop_client(vars['xmppid'])
     elif vars['type'] == 'change_ip':
