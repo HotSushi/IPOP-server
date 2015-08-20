@@ -1,7 +1,84 @@
 {{extend 'layout.html'}}
-<h1>
-VPN Admin interface
-</h1>
-<a class="button" href={{=URL('creategvpn')}}>Create GVPN</a><br>
-<a class="button" href={{=URL('editgvpn')}}>Edit GVPN</a><br>
-<a class="button" href={{=URL('monitor')}}>Monitor GVPN</a>
+
+<div class="container-fluid row" style="background-color:#673ab7;color:#fff;min-height:400px;">
+  <div class="page-header">
+        <h1>IP over P2P Web Interface</h1>      
+   </div>
+  
+  <div class="col-sm-4">
+  		<h3>What is IPOP?</h3>
+  		<p>
+  		IPOP (IP-over-P2P) is an open-source user-centric software virtual network allowing end users to define and create their own virtual private networks (VPNs). IPOP virtual networks provide end-to-end tunneling of IP or Ethernet over “TinCan” links setup and managed through a control API to create various software-defined VPN overlays.
+  		</p>
+  </div>
+
+  <div class="col-sm-4">
+  	    <h3>Uses of the Web Interface</h3>
+  	    <p>
+  	    The web interface helps you create VPNs with GUI. It currently supports two (GVPN, AdminGVPN) out of the three VPN types IPOP has.
+		It provides you with visualization tools to monitor your VPN easily. The Web-UI also supports integration with Ganglia monitoring tool.
+		You can also see log files that were sent by ejabberd servers and client nodes.  	 
+  	    </p> 
+  </div>
+
+  <div class="col-sm-4">
+  		<h3>VPN Types</h3>
+  		<ul style="font-size:11px;">
+		  <li >
+		  		<p><strong>GVPN:</strong> In GroupVPN, is the basic version of VPN where the user is expected to use JIDs which are already registered in xmpp server and relationships with other JIDs are already added. </p>
+		  </li>
+		  <li >
+		  		<p><strong>ADMIN-GVPN:</strong> Admin-GroupVPN, using the functionality of MUC rooms, hence avoiding the trouble of adding relationships. Admin of the room can add nodes, remove nodes. Here too, JIDs are assumed to be valid.</p>
+		  </li>
+		  <li >
+		  		<p><strong>BATCH-GVPN:</strong> Batch-GroupVPN, is similar to GVPN but with added functionality of  automatically generating JIDs, adding relationships, removing JIDs, which is useful when there are large number of node.</p>
+		  </li>
+		  
+		</ul>
+
+  </div>
+
+</div>
+
+<div class="row">
+<nav class="navbar navbar-default" data-spy="affix" data-offset-top="197">
+  <div class="container-fluid">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>                        
+      </button>
+      <a class="navbar-brand" href="#">Edit</a>
+    </div>
+      <div class="collapse navbar-collapse" id="myNavbar">
+        <ul class="nav navbar-nav">
+            
+                <li><a href="#vpn_alicevpn">Alicevpn</a></li>
+            
+        </ul>
+      </div>
+  </div>
+</nav>  
+</div>
+
+
+
+
+
+    <div id="vpn_alicevpn" class="row container-fluid" style="padding:25px; padding-top:50px; background-color: #ff9800 ">
+       <div class="page-header">
+          <h1>Alicevpn</h1>
+       </div>
+
+       <div class="row container-fluid">     
+           
+
+         
+       </div>
+            
+       <div class="row container-fluid" style="overflow:auto;">
+            <h2>Nodes</h2>
+        </div>
+    </div>
+
