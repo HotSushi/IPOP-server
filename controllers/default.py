@@ -387,7 +387,6 @@ def sendtoclient():
     vid = query.vpn_id
     xmpp_host = query.xmpp_host
     admin_jid, admin_password = db.vpn[vid].admin_jid, db.vpn[vid].admin_password
-    print xmpp_host
     serverxmpp.change_instance(admin_jid, admin_password, xmpp_host)
     if vars['type'] == 'stop':
         serverxmpp.instance.stop_client(vars['xmppid'])

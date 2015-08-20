@@ -1,22 +1,14 @@
 from sleekxmpp import ClientXMPP
 from sleekxmpp.exceptions import IqError, IqTimeout
 
-
 class ServerXmppBot(ClientXMPP):
 
     def __init__(self, jid, password):
         ClientXMPP.__init__(self, jid, password)
-        self.jid = jid
+        self.admin_jid = jid
         self.add_event_handler("session_start", self.session_start)
         self.add_event_handler("message", self.message)
         self.msgcallback = {}
-
-    def change_instance(self,admin_jid,admin_password):
-        if self.jid == admin_jid:
-            return
-        self.__init__( admin_jid,admin_password)
-        connect()
-        process(block = False)
 
     def add_callback(self, function_name, function_addr):
         self.msgcallback[function_name] = function_addr
@@ -42,7 +34,7 @@ class ServerXmppBot(ClientXMPP):
                 pass
 
     def get_admin_jid(self):
-        return self.jid            
+        return self.admin_jid            
 
     def get_client_pk(self, client):
         self.send_message(mto = client, mbody = 'get_key ')
@@ -64,16 +56,38 @@ def init():
     instance.process(block=False)
     initiated = True
 
-def change_instance(admin_jid,admin_password):
+# I am assuming ejabberd will always be on port 5280
+def change_instance(admin_jid, admin_password, xmpp_host):
     global instance
     if initiated and instance.get_admin_jid() == admin_jid:
         return
 
-    print 'changed admin to '+ admin_jid
+    print 'changed admin to '+ admin_jid 
     instance = ServerXmppBot(admin_jid , admin_password)
-    instance.connect()
-    instance.process(block = False)
 
+    if not is_xmpphost_IP(xmpp_host):
+        if not instance.connect(reattempt=False):
+            print 'Could not connect to xmpp server'
+    else:
+        #create tuple (xmpp_host_ip,port)  ,default ejabberd port = 5280 
+        if ':' in xmpp_host:
+            x_host_tuple = tuple(xmpp_host.split(':'))
+        else:
+            x_host_tuple = (xmpp_host,'5222')
+        if not instance.connect(address=x_host_tuple, reattempt=False):
+            print 'Could not connect to xmpp server'
+    instance.process(block=False)               
+
+
+
+def is_xmpphost_IP(x_host):
+    #if there is any alphabet
+    is_ip = True
+    for c in x_host:
+        if c.isalpha():
+            is_ip = False
+            break
+    return is_ip
 
 '''
 if __name__ == '__main__':
