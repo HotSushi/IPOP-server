@@ -148,8 +148,8 @@ def delet():
         ejabberd_password = db(db.vpn.id == query_result[0].vpn_id).select()[0].ejabberd_password
         data['jid'] = jid
         data['xmpp_host'] = query_result[0].xmpp_host
-        #if ejabberd_password is empty, implies non-ejabberd server
-        if ejabberd_password != '':
+        # if ejabberd_password is not empty, implies batchvpn
+        if ejabberd_password not in ['','None',None]:
             data['xmpp_host_password'] = ejabberd_password
             response = urllib2.urlopen('http://127.0.0.1:8000%s?%s'%(URL('unregister_relationship.json'),urllib.urlencode(data)))
             response = json.loads(response.read())
@@ -157,6 +157,23 @@ def delet():
                 #if its non-ejabberd server,ignore
                 if response['json']['msg'] != "The ipop-ejabberd server is not running":
                     return dict(json=response['json'])
+        # if vpn type is admin-gvpn
+        elif db.vpn[query_result[0].vpn_id].is_admingvpn == 'yes':
+            vpn_obj = db.vpn[query_result[0].vpn_id]
+            _data = {
+            'admin_jid':vpn_obj.admin_jid,
+            'admin_password':vpn_obj.admin_password,
+            'xmpp_host':query_result[0].xmpp_host,
+            'vpnname':vpn_obj.vpn_name.lower(),
+            'ipspace':query_result[0].ip,
+            'jids':jid,
+            'type':'delete'
+            }
+            response = urllib2.urlopen('http://127.0.0.1:8000%s?%s'%(URL('admingvpn.json'),urllib.urlencode(_data)))
+            response = json.loads(response.read())
+
+            if response['json']['return_code'] == 2:
+                return dict(json=response['json'])
         db(db.xmpnode.jid == jid).delete()
     return dict(json={'return_code':0,'msg':'successfully deleted'})
 
