@@ -83,7 +83,7 @@ function fillJid(){
 function createroom(){
     $('#progress-bar').addClass('active')
     _data = $("form").serialize()
-    $.getJSON("http://127.0.0.1:8000{{=URL('admingvpn.json')}}", _data+'&type=create',function(result){
+    $.getJSON("{{=URL('default','admingvpn.json')}}", _data+'&type=create',function(result){
         if (result.json.return_code != 0){
               show_error_msg(result.json.msg);
         }
@@ -97,7 +97,7 @@ function createroom(){
 
 function inviteroom(){
     _data = $("form").serialize()
-    $.getJSON("http://127.0.0.1:8000{{=URL('admingvpn.json')}}", _data+'&type=invite',function(result){
+    $.getJSON("{{=URL('default','admingvpn.json')}}", _data+'&type=invite',function(result){
         if (result.json.return_code != 0){
               show_error_msg(result.json.msg);
         }
@@ -129,7 +129,7 @@ function create(jsonobj){
         xmpphost:xh.trim(),
         isadmingvpn:'yes'
     }
-    $.getJSON("http://127.0.0.1:8000{{=URL('put.json')}}?" + $.param(_data ),{},function(result){
+    $.getJSON("{{=URL('default','put.json')}}?" + $.param(_data ),{},function(result){
         if (result.json.return_code != 0){
              show_error_msg(result.json.msg);
              
@@ -155,7 +155,7 @@ function show_error_msg(msg){
 }
 function put_json(){
     _data = {}
-    $.getJSON("http://127.0.0.1:8000{{=URL('put.json')}}?" + $("#mainform").serialize(),_data,function(result){
+    $.getJSON("{{=URL('default','put.json')}}?" + $("#mainform").serialize(),_data,function(result){
         if (result.json.return_code != 0){
              show_error_msg(result.json.msg);
              $('#progress-bar').css('width','0%');

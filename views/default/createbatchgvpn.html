@@ -90,7 +90,7 @@ function show_error_msg(msg){
 }
 
 function put_json(){
-    $.getJSON("http://127.0.0.1:8000{{=URL('put.json')}}?" + $("#mainform").serialize(),{},function(result){
+    $.getJSON("{{=URL('default','put.json')}}?" + $("#mainform").serialize(),{},function(result){
         if (result.json.return_code != 0){
              show_error_msg(result.json.msg);
              $('#progress-bar').css('width','0%');
@@ -115,7 +115,7 @@ function register_ejabberd(){
         subnet:$('#subnet').val(),
         xmpp_host_password:$('#xmpp_host_password').val()
     }
-    $.getJSON("http://127.0.0.1:8000{{=URL('register_relationships.json')}}", data_,function(result){
+    $.getJSON("{{=URL('default','register_relationships.json')}}", data_,function(result){
         if (result.json.return_code != 0){
              show_error_msg(result.json.msg);             
         }
