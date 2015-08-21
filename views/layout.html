@@ -48,6 +48,13 @@
     height: 150px;
     bottom: 0;
   }
+  .jumbotron {
+    padding: 0.5em 0.6em;
+ }
+
+  .jumbotron li {
+    margin: 0 0 5px 0;
+  }
   </style>
 </head>
 
@@ -63,7 +70,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>                        
       </button>
-      <a class="navbar-brand" href="#">IPOP</a>
+      <a class="navbar-brand" href="http://ipop-project.org/">IPOP</a>
     </div>
     <div class="collapse navbar-collapse" id="mainmenu">
       <ul class="nav navbar-nav">
@@ -101,7 +108,7 @@
 
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+        <li><a href="{{=URL('default','login')}}"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
       </ul>
     </div>
   </div>
@@ -118,11 +125,11 @@
 <footer class="footer row container-fluid" style="color:white;">
       <div style="height:20px;"></div>
       <div class="col-sm-4" style="text-align: left;">
-        <a href="https://github.com/HotSushi">Source Code:<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRO8zfLvWlOENIBOL_4STDnKxA9l0UeVqSNpbh929XFgmYMsIrN" style="width:89px;height:23px;"></img></a>
+        <a href="https://github.com/HotSushi/IPOP-server">Source Code:<img src="{{=URL('IPOP','static','images/GitHub_Logo.png')}}" style="width:40px;height:40px;"></img></a>
       </div>
       
       <div class="col-sm-4" style="text-align: center;">
-        <a href="https://github.com/HotSushi">Powered By:<img src="http://www.web2py.com/init/static/images/Stickers6.png"></img></a>
+        <a href="http://www.web2py.com/">Powered By:<img src="http://www.web2py.com/init/static/images/Stickers6.png"></img></a>
         <br>
         <br>
         <p>Designed By:</p>
@@ -133,7 +140,7 @@
       </div>
       
       <div class="col-sm-4" style="text-align: right;">
-        <a href="https://github.com/HotSushi">Based On:<img src="http://www.carnagar.com/media/manufacturer/2012-11-06-06-33-41-i-pop-logo.jpg" style="width:89px;height:23px;"></img></a>
+        <a href="http://ipop-project.org/">Based On:<img src="{{=URL('IPOP','static','images/IPOP.jpg')}}" style="width:79px;height:23px;"></img></a>
       </div>
 </footer>
 

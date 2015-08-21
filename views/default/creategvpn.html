@@ -144,13 +144,21 @@ function register_ejabberd(){
      <form id="mainform" action='{{=URL("put.json")}}' method="GET">
          
          <div style="min-height:400px">   
-            <div id="admindetails">
-                <h3>Enter Admin Details</h3>
+            <div id="admindetails">    
                     <div class="jumbotron">
-                    <h3>Bootstrap Tutorial</h3>
-                    <p>Bootstrap is the most popular HTML, CSS, and JS framework for developing
-                    responsive, mobile-first projects on the web.</p>
+                    <h2>GroupVPN</h2>
+                    <div style="font-size:1.5em;">
+                        <ul>
+                            <li><span class="label label-success">Will work on most of the xmpp servers.</span></li>
+                            <li><span class="label label-success">Supports stopping or changing IP of the node.</span></li>
+                            <li><span class="label label-success">Personal choice of IP settings.</span></li>
+                            <li><span class="label label-danger">Assumes Admin jid is friends with participating nodes.</span></li>
+                            <li><span class="label label-danger">Does not add relationships or create nodes.</span></li>
+                            <li><span class="label label-info">Runs GVPN controller.</span></li>                            
+                        </ul>
+                    </div>
                   </div>
+            <h3>Enter Admin Details</h3>    
                   <div class="form-group">
                     <label for="adminjid">Admin Jabber ID:</label>
                     <input name="adminjid" placeholder="ex. alice123@xmpp.jp" type="email" class="form-control">
@@ -191,7 +199,7 @@ function register_ejabberd(){
                   </div>
                   <div class="form-group">
                     <label for="xmpphtxtbox">Enter XMPP host:</label>
-                    <input id="xmpphtxtbox" type="text" class="form-control">
+                    <input id="xmpphtxtbox" type="text" placeholder="Enter public IP" class="form-control">
                   </div>
                   <div class="form-group">
                     <label for="xmppiptxtbox">Enter IP:</label>
@@ -202,16 +210,16 @@ function register_ejabberd(){
             </div>
 
             <div id="finished">
-                <div class="jumbotron">
-                 <h1><span class="glyphicon glyphicon-ok" style="font-size: 50px;"></span></h1>
-                </div>
+                 <h1 style="text-align:center;font-size: 150px;">
+                      <span class="label label-success"> <span class="glyphicon glyphicon-ok"></span> Success</span>
+                 </h1>                
             </div>
 
         </div>
 
            
 
-            <div class="progress" style="margin-top:10%;">
+            <div class="progress" style="margin-top:5%;">
               <div id="progress-bar" class="progress-bar progress-bar-info progress-bar-striped" role="progressbar"
               aria-valuenow="2" aria-valuemin="0" aria-valuemax="3" style="width:50%;">
               </div>

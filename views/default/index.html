@@ -1,5 +1,24 @@
 {{extend 'layout.html'}}
 
+<style>
+ .info_div {
+    min-height:600px;
+ }
+ .info_div h1{
+  font-weight: bold;  
+ }
+ .info_div h3{
+  font-weight: 550;
+  padding-bottom:20px;
+ }
+  
+ .info_div img{
+    border-radius: 25px;
+    width:400px;
+    height:400px;
+ }
+</style>
+
 <div class="container-fluid row" style="background-color:#673ab7;color:#fff;min-height:400px;">
   <div class="page-header">
         <h1>IP over P2P Web Interface</h1>      
@@ -25,10 +44,10 @@
   		<h3>VPN Types</h3>
   		<ul style="font-size:11px;">
 		  <li >
-		  		<p><strong>GVPN:</strong> In GroupVPN, is the basic version of VPN where the user is expected to use JIDs which are already registered in xmpp server and relationships with other JIDs are already added. </p>
+		  		<p><strong>GVPN:</strong> GroupVPN, is the basic version of VPN where the user is expected to use JIDs which are already registered in xmpp server and relationships with other JIDs are already established. </p>
 		  </li>
 		  <li >
-		  		<p><strong>ADMIN-GVPN:</strong> Admin-GroupVPN, using the functionality of MUC rooms, hence avoiding the trouble of adding relationships. Admin of the room can add nodes, remove nodes. Here too, JIDs are assumed to be valid.</p>
+		  		<p><strong>ADMIN-GVPN:</strong> Admin-GroupVPN, uses the functionality of MUC rooms, hence avoiding the trouble of adding relationships. Admin of the room can add nodes, remove nodes. Here too, JIDs are assumed to be valid.</p>
 		  </li>
 		  <li >
 		  		<p><strong>BATCH-GVPN:</strong> Batch-GroupVPN, is similar to GVPN but with added functionality of  automatically generating JIDs, adding relationships, removing JIDs, which is useful when there are large number of node.</p>
@@ -49,13 +68,19 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>                        
       </button>
-      <a class="navbar-brand" href="#">Edit</a>
+      <a class="navbar-brand" href="#">Features</a>
     </div>
       <div class="collapse navbar-collapse" id="myNavbar">
         <ul class="nav navbar-nav">
-            
-                <li><a href="#vpn_alicevpn">Alicevpn</a></li>
-            
+                <li><a href="#multiple_vpns">Multiple VPNs</a></li>
+                <li><a href="#graphs_div">Graphs</a></li>
+                <li><a href="#admin_gvpn">Admin GVPN</a></li>
+                <li><a href="#batch_gvpn">Batch GVPN</a> </li>
+                <li><a href="#client_interface">Client Interface</a> </li>
+                <li><a href="#logs_data">Logs</a> </li>
+                <li><a href="#ganglia">Ganglia Monitoring</a> </li>
+                <li><a href="#smaller_screens">Smaller Screen</a> </li>
+                <li><a href="#todo">To Do</a> </li>
         </ul>
       </div>
   </div>
@@ -64,21 +89,150 @@
 
 
 
-
-
-    <div id="vpn_alicevpn" class="row container-fluid" style="padding:25px; padding-top:50px; background-color: #ff9800 ">
+    <div id="multiple_vpns" class="info_div row container-fluid" style="padding:25px; padding-top:50px; background-color: #1E88E5 ">
        <div class="page-header">
-          <h1>Alicevpn</h1>
+          <h1 style="text-align:right;">Multiple VPNs</h1>
        </div>
-
-       <div class="row container-fluid">     
-           
-
-         
+       <div class="col-sm-9">     
+            <h3> This web interface helps you in managing multiple IPOP VPNs at the same time. </h3>
+            <h3> You can change IP, stop nodes or delete nodes from the user interface. </h3>
+            <h3> This server is expected to run on a static IP so that client nodes can connect to it directly.</h3>
+            <h3> The server connects to the client nodes through the admin JID provided for each VPN.</h3>
+            <h3> Whenever a stop/change IP button is clicked, the server switches to the respective admin JID and sends msg to the client.</h3>          
        </div>
-            
-       <div class="row container-fluid" style="overflow:auto;">
-            <h2>Nodes</h2>
-        </div>
+       <div class="col-sm-3">
+           <img src="{{=URL('IPOP','static','images/multiple_vpns.jpg')}}" ></img>
+       </div>
     </div>
+
+    <div id="graphs_div" class="info_div row container-fluid" style="padding:25px; padding-top:50px; background-color: #009688 ">
+       <div class="page-header">
+          <h1>Graphs</h1>
+       </div>
+       <div class="col-sm-3">
+           <img src="{{=URL('IPOP','static','images/d3js.jpg')}}" ></img>
+       </div>
+       <div class="col-sm-9">     
+            <h3> Uses <a href="http://d3js.org/">D3.js</a> for displaying graphs </h3>
+            <h3> Clicking on the nodes takes you to the relevant data, for ex. Monitoring info or Logs for that node </h3>
+            <h3> Hovering over the nodes provides info such as its JID, Password, IP</h3>
+            <h3> Color of the nodes reflects whether the node is running</h3>         
+       </div>
+    </div>
+
+    <div id="admin_gvpn" class="info_div row container-fluid" style="padding:25px; padding-top:50px; background-color: #ff9800 ">
+       <div class="page-header">
+          <h1 style="text-align:right;">Admin GVPN</h1>
+       </div>
+       <div class="col-sm-9">     
+            <h3> The WebUI supports AdminGVPN <a href="https://github.com/ipop-project/controllers/blob/devel/src/admin_gvpn.py">Github link</a>  </h3>
+            <h3> AdminGVPN uses MUC rooms to invite member nodes or remove nodes, which saves trouble of adding relationships between them.</h3>
+            <h3> This server preserves environment for each of the existing AdminGVPNs locally <strong>{ProjectDir}/static/scripts/db</strong>. </h3>
+            <h3> WebUI also supports removing nodes from rooms. </h3>
+            <h3> The wrapper built around admingvpn controller supports inviting new members too, but this functionality is not used yet.</h3>          
+       </div>
+       <div class="col-sm-3">
+            <img src="{{=URL('IPOP','static','images/admingvpn.jpg')}}" ></img>
+       </div>
+    </div>
+
+    <div id="batch_gvpn" class="info_div row container-fluid" style="padding:25px; padding-top:50px; background-color: #00bcd4 ">
+       <div class="page-header">
+          <h1>Batch GVPN</h1>
+       </div>
+       <div class="col-sm-3">
+            <img src="{{=URL('IPOP','static','images/batchgvpn.jpg')}}" ></img>
+       </div>
+       <div class="col-sm-9">
+
+            <h3> Behaves similar to normal GVPN, but with additional functionality of automatic creation of nodes and adding friend relationship. Doing this manually for large number of node will be infeasible</h3>     
+            <h3> Uses <a href="https://github.com/ipop-project/groupvpn-config">Groupvpn-config</a> for generating instuctions for creating nodes and establishing relations.</h3>
+            <h3> Captures IP settings provided by Groupvpn-config </h3>
+            <h3> Requires <a href="https://github.com/HotSushi/IPOP-ejabberd"> Ejabberd-IPOP Interface server</a> to be running on the ejabberd server. (Port: 7000)</h3>
+            <h3> Server sends ejabberd instructions and sudo password to this Ejabberd-IPOP interface which then executes it locally.</h3>         
+       </div>
+    </div>
+
+    <div id="client_interface" class="info_div row container-fluid" style="padding:25px; padding-top:50px; background-color: #673ab7 ">
+       <div class="page-header">
+          <h1 style="text-align:right;">Client Interface</h1>
+       </div>
+       <div class="col-sm-9">     
+            <h3> The <a href="https://github.com/HotSushi/IPOP-client">Client-UI</a> eases the tasks of launching IPOP and controller.</h3>
+            <h3> It requires Server's address:port and Client Node's JID for logging in.</h3>
+            <h3> Client-UI automatically fetches config data from the server, generates config files and launches respective type of the controller.</h3>
+            <h3> Client-UI fetches config file securely by registering it's public key with the server, and getting the encrypted config data. </h3>
+            <h3> It also does the task of periodically uploading log files to the server.</h3>          
+       </div>
+       <div class="col-sm-3">
+       <img src="{{=URL('IPOP','static','images/client.jpg')}}" ></img>
+       </div>
+    </div>
+
+    <div id="logs_data" class="info_div row container-fluid" style="padding:25px; padding-top:50px; background-color: #00bcd4 ">
+       <div class="page-header">
+          <h1>Logs</h1>
+       </div>
+       <div class="col-sm-3">
+           <span class="glyphicon glyphicon-file" style="font-size: 20em;color:white;padding-top:50px;"></span>
+       </div>
+       <div class="col-sm-9">
+
+            <h3> Server provides interface for uploading logs.</h3>     
+            <h3> Client-UI uploads logs when it starts, untill it is stopped.</h3>
+            <h3> A <a href="https://github.com/HotSushi/IPOP-ejabberd/tree/master/log">script</a> is written for uploading ejabberd logs to the server, but it has to be cron-scheduled</h3>
+            <h3> Logs of a particular node can be seen by clicking on it on the graph.</h3>
+            <h3> Logs can be flushed by clicking on the button provided on the interface</h3>        
+       </div>
+    </div>
+
+    <div id="ganglia" class="info_div row container-fluid" style="padding:25px; padding-top:50px; background-color: #009688 ">
+       <div class="page-header">
+          <h1 style="text-align:right;">Ganglia Monitoring</h1>
+       </div>
+       <div class="col-sm-9">     
+            <h3> IPOP is already integrated with <a href="https://github.com/ipop-project/documentation/wiki/Integrating-Ganglia-monitoring-with-IPOP" >Ganglia Monitoring Tool</a> .</h3>
+            <h3> The web-ui collects graphs from the ganglia web interface.</h3>
+            <h3> Monitoring info is only available for clients nodes and  not for xmpp servers.</h3>
+            <h3> Monitoring info can be accessed by clicking on the node in the graph. </h3>
+            <h3> Time period of the graph can be changed.</h3>          
+       </div>
+       <div class="col-sm-3">
+           <a href="http://ganglia.sourceforge.net/"><img src="http://ganglia.sourceforge.net/logo_small.jpg"  style="height:270px;"></img></a>
+       </div>
+    </div>
+
+    <div id="smaller_screens" class="info_div row container-fluid" style="padding:25px; padding-top:50px; background-color: #673ab7 ">
+       <div class="page-header">
+          <h1 >Small Screen Support</h1>
+       </div>
+       <div class="col-sm-3">
+           <img src="{{=URL('IPOP','static','images/mobile.jpg')}}" style="height:450px;width:280px"></img>
+       </div>
+       <div class="col-sm-9">     
+            <h3> The UI is designed with <a href="http://getbootstrap.com/">bootstrap</a>.</h3>
+            <h3> Most of the features can be used with smaller screen.</h3>
+            <h3> If the server has a static IP it is possible to use the features through mobile device.</h3>
+            <h3> The interface is not very attractive for smaller screens, but it can be worked upon. </h3>
+       </div>
+       
+    </div>
+
+    <div id="todo" class="info_div row container-fluid" style="padding:25px; padding-top:50px; background-color: #1E88E5 ">
+       <div class="page-header">
+          <h1 style="text-align:right;">To Do</h1>
+       </div>
+       <div class="col-sm-9">
+            <h3> Current Implementation identifies each node with a jid, this forces the JID to be used only in a single VPN. Improve this by identifying each node with (JID, VPN_name) combination.</h3>
+            <h3> Adding nodes to existing VPN. (Interface is ready for admingGVPN but not for batchGVPN)</h3>     
+            <h3> Deleting VPNs completely, and recursively removing participant nodes from adminGVPN/ batchGVPN</h3>
+            <h3> Supporting different types of users (Super user, Admin user) with different rights. For example super user can create/ delete vpns but admin user can control only VPN functonalities like stopping nodes/ changing IP /adding participants etc.</h3>
+            <h3> Search feature for logs.</h3>        
+       </div>
+       <div class="col-sm-3">
+           <span class="glyphicon glyphicon-th-list" style="font-size: 20em;color:white;padding-top:50px;"></span>
+       </div>
+       
+    </div>
+
 
