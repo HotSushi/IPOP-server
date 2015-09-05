@@ -4,11 +4,16 @@ import urllib2
 
 running_timers = {}
 
+PORT_NO = '8000'
+
+def set_port_no(portno):
+    global PORT_NO
+    PORT_NO = str(portno)
+
 def setJidStopped(jid):
-    #print jid + 'stopped'
     kill(jid)
     data = urllib.urlencode({'type':'change_status','xmppid':jid,'status':'stopped'})
-    urllib2.urlopen('http://127.0.0.1:8000/IPOP/default/set?%s'%(data))
+    urllib2.urlopen('http://127.0.0.1:%s/IPOP/default/set?%s'%(PORT_NO,data))
     
 #after 5 minutes the function will go off
 def beat(jid):

@@ -138,6 +138,7 @@ def put():
     return dict(json={'return_code':0,'msg':'successfully added'})
 
 def delet():
+    PORT_NO = request.env.server_port
     vars = request.get_vars
     jids = vars['jids'].split()
     for jid in jids:
@@ -151,7 +152,7 @@ def delet():
         # if ejabberd_password is not empty, implies batchvpn
         if ejabberd_password not in ['','None',None]:
             data['xmpp_host_password'] = ejabberd_password
-            response = urllib2.urlopen('http://127.0.0.1:8000%s?%s'%(URL('unregister_relationship.json'),urllib.urlencode(data)))
+            response = urllib2.urlopen('http://127.0.0.1:%s%s?%s'%(PORT_NO,URL('unregister_relationship.json'),urllib.urlencode(data)))
             response = json.loads(response.read())
             if response['json']['return_code'] == 2:
                 #if its non-ejabberd server,ignore
@@ -169,7 +170,7 @@ def delet():
             'jids':jid,
             'type':'delete'
             }
-            response = urllib2.urlopen('http://127.0.0.1:8000%s?%s'%(URL('admingvpn.json'),urllib.urlencode(_data)))
+            response = urllib2.urlopen('http://127.0.0.1:%s%s?%s'%(PORT_NO,URL('admingvpn.json'),urllib.urlencode(_data)))
             response = json.loads(response.read())
 
             if response['json']['return_code'] == 2:
@@ -383,6 +384,7 @@ def set():
     if(vars['type'] == 'set_public_key'):
         db(db.xmpnode.jid == vars['xmppid']).update(public_key=vars['public_key'])
     elif(vars['type'] == 'change_status'):
+        heartbeat.set_port_no(request.env.server_port)
         if vars['status'] == 'running':
             heartbeat.beat(vars['xmppid'])
         elif vars['status'] == 'stopped':
