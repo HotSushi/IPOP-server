@@ -45,6 +45,19 @@
            $.post( "{{=URL('default','sendtoclient')}}?"+encodeURI(uri));
        }
    }
+   function deletevpn(stringg, is_running, vpn_id){
+         if (is_running == "True"){
+            alert("Sorry, some nodes are still running, please stop them before deleting");
+            return;
+        }
+       uri = "jids="+stringg;
+       $.getJSON( "{{=URL('default','delet.json')}}?"+encodeURI(uri) ,function(result){
+            if(result.json.return_code == 0){
+                uri = "vid="+vpn_id;
+                $.get( "{{=URL('default','delete_vpn')}}?"+encodeURI(uri));    
+            }
+       });
+   }
 
    window.setInterval(reloader, 2000);
    var json_file = null;
@@ -114,6 +127,22 @@
     <div id="vpn_{{=json[i]['vpn_name']}}" class="row container-fluid" style="padding:25px; padding-top:50px; background-color: {{=colors[i%len(colors)]}} ">
        <div class="page-header">
           <h1>{{=json[i]['vpn_name'].capitalize()}}</h1>
+
+
+          {{ # logic for deleting a VPN if all nodes are stopped}}
+          {{ d_nodes, d_all_nodes = json[i]['nodes'], [] }}
+          {{ for z in range(1,len(d_nodes)+1): }}
+            {{if d_all_nodes!=None and d_nodes[z]['status'] == "stopped":}}
+                {{d_all_nodes.append(d_nodes[z]['jid']) }}
+            {{else:}}
+                {{d_all_nodes = None}}  
+            {{pass}}
+          {{pass}}
+
+          <h1 style="text-align:right;"><span class="glyphicon glyphicon-trash" onclick="
+          deletevpn('{{=" ".join((d_all_nodes or []))}}','{{= (d_all_nodes == None)}}',{{=json[i]['vpn_id']}})
+          "></span>
+            </h1>
        </div>
 
        <div class="row container-fluid">     

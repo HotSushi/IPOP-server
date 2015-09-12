@@ -137,6 +137,19 @@ def put():
         
     return dict(json={'return_code':0,'msg':'successfully added'})
 
+def delete_vpn():
+    vars = request.get_vars
+    vid = vars['vid']
+    vpn_obj = db.vpn[vid]
+    if vpn_obj.is_admingvpn == 'yes':
+        response = urllib2.urlopen(URL('admingvpn.json', vars={'type':'destroy','vpnname':vpn_obj.vpn_name}, scheme='http', host=True))
+        response = json.loads(response.read())
+        if response['json']['return_code'] != 0:
+            return dict(json={'return_code':2,'msg':'could not delete admingvpn'})
+    del db.vpn[vid]
+    return dict(json={'return_code':0,'msg':'successfully deleted'})
+
+
 def delet():
     PORT_NO = request.env.server_port
     vars = request.get_vars
@@ -275,9 +288,10 @@ def unregister_relationship():
 def admingvpn():
     vars = request.get_vars
     admin_jid,admin_pw,xmpp_host,vpn_name,ipspace = vars['admin_jid'],vars['admin_password'],vars['xmpp_host'], vars['vpnname'], vars['ipspace'] 
-    for ele in [admin_jid,admin_pw,xmpp_host,vpn_name,ipspace]:
-        if not ele :
-            return dict(json={'return_code':2,'msg':'Some arguments were not passed'})
+    if vars['type'] != 'destroy':
+        for ele in [admin_jid,admin_pw,xmpp_host,vpn_name,ipspace]:
+            if not ele :
+                return dict(json={'return_code':2,'msg':'Some arguments were not passed'})
     vpn_name = vpn_name.lower()
     if vars['type'] == 'create':
         # create muc room
