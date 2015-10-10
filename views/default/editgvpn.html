@@ -17,7 +17,7 @@
               window.location = "{{=URL('default','monitor')}}?"+encodeURI(uri);
            }
     }
-    function delet(stringg, is_running){
+    function delet(stringg, is_running, vpn_id){
         if (is_running == "True"){
             alert("Sorry, the node is still running, please stop it before deleting");
             return;
@@ -26,7 +26,7 @@
         if (r == false) {
             return;
         } 
-       uri = "jids="+stringg;
+       uri = "jids="+stringg +"&vid="+vpn_id;
        var r = $.get( "{{=URL('default','delet')}}?"+encodeURI(uri));
    }
    function stopvpn(stringg){
@@ -37,10 +37,10 @@
        uri = "type=stop&xmppid="+stringg;
        var r = $.post( "{{=URL('default','sendtoclient')}}?"+encodeURI(uri));
    }
-   function changeip(xmppid){
+   function changeip(xmppid, vpnname){
        ip = prompt("Please enter new IP","192.168.10.1")
        if (ip != null){
-           uri = "type=change_ip&xmppid=" + xmppid + "&ip=" + ip;
+           uri = "type=change_ip&xmppid=" + xmppid +"&vpnname="+ vpnname +"&ip=" + ip;
            $.post( "{{=URL('default','set')}}?"+encodeURI(uri));
            $.post( "{{=URL('default','sendtoclient')}}?"+encodeURI(uri));
        }
@@ -50,7 +50,11 @@
             alert("Sorry, some nodes are still running, please stop them before deleting");
             return;
         }
-       uri = "jids="+stringg;
+        var r = confirm("Are you sure you want to delete the VPN permanantly?");
+        if (r == false) {
+            return;
+        }
+       uri = "jids="+stringg +"&vid="+vpn_id;
        $.getJSON( "{{=URL('default','delet.json')}}?"+encodeURI(uri) ,function(result){
             if(result.json.return_code == 0){
                 uri = "vid="+vpn_id;
@@ -182,10 +186,11 @@
                                 {{pass}}
                                 </td>
                                 <td><a><span class="glyphicon glyphicon-stop" onclick="stopvpn( '{{= nodes[j]['jid'] }}' )" style="font-size:20px;color:black"></span></a></td> 
-                                <td><a><span class="glyphicon glyphicon-edit" onclick="changeip( '{{= nodes[j]['jid'] }}' )" style="font-size:20px;color:blue"></span></a></td> 
+                                <td><a><span class="glyphicon glyphicon-edit" onclick="changeip( '{{= nodes[j]['jid'] }}', '{{= json[i]['vpn_name'] }}' )" style="font-size:20px;color:blue"></span></a></td> 
                                 <td><a><span class="glyphicon glyphicon-trash" onclick="delet( 
                                 '{{= nodes[j]['jid'] }}',
-                                '{{= nodes[j]['status'] != "stopped"}}'  
+                                '{{= nodes[j]['status'] != "stopped"}}',
+                                '{{=json[i]['vpn_id']}}'
                                 )" style="font-size:20px;color:#6600CC"></span></a></td> 
                             </tr>      
                             

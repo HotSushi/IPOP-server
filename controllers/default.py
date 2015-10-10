@@ -7,6 +7,7 @@ import serverxmpp
 import gvpnconfig
 import heartbeat
 import admingvpnwrapper
+import pdb
 
 from Crypto.PublicKey import RSA
 
@@ -156,7 +157,7 @@ def delet():
     jids = vars['jids'].split()
     for jid in jids:
         data = {}
-        query_result = db(db.xmpnode.jid == jid).select()
+        query_result = db((db.xmpnode.jid == jid)&(db.xmpnode.vpn_id == vars['vid'])).select()
         if len(query_result) == 0:
             return dict(json={'return_code':2,'msg':'Node '+jid+' doesn\'t exist in db'})
         ejabberd_password = db(db.vpn.id == query_result[0].vpn_id).select()[0].ejabberd_password
@@ -188,7 +189,7 @@ def delet():
 
             if response['json']['return_code'] == 2:
                 return dict(json=response['json'])
-        db(db.xmpnode.jid == jid).delete()
+        db((db.xmpnode.jid == jid)&(db.xmpnode.vpn_id == vars['vid'])).delete()
     return dict(json={'return_code':0,'msg':'successfully deleted'})
 
 
@@ -198,8 +199,9 @@ def get():
         return dict()
     if vars['type'] == 'getjson':
         xid = vars['xmppid']
-        row = db(db.xmpnode.jid == xid).select()[0]
-        is_admingvpn = db(db.vpn.id == row.vpn_id).select()[0].is_admingvpn
+        vpn = db(db.vpn.vpn_name == vars['vpnname']).select()[0]
+        row = db((db.xmpnode.jid == xid)&(db.xmpnode.vpn_id == vpn.id)).select()[0]
+        is_admingvpn = vpn.is_admingvpn
         dic = {
             "xmpp_username": "",
             "xmpp_password": "",
@@ -219,12 +221,20 @@ def get():
         config = json.dumps(dic)
         key = RSA.importKey(row.public_key)
         enc_data = key.encrypt(config, 32)[0]
-        return enc_data
+        return enc_data 
+    elif vars['type'] == 'getjidbusy':
+        xid = vars['xmppid']
+        if db((db.xmpnode.jid == xid)&(db.xmpnode.status == 'running')).select():
+            raise HTTP(503,'Client Jid busy')
+        return xid
     elif vars['type'] == 'getserverjid':
         xid = vars['xmppid']
-        vid = db(db.xmpnode.jid == xid).select()[0].vpn_id
-        adminxmpp = db.vpn[vid].admin_jid
-        return adminxmpp
+        vid = db(db.vpn.vpn_name == vars['vpnname']).select()[0].id
+        if db((db.xmpnode.jid == xid)&(db.xmpnode.vpn_id == vid)).select():
+            adminxmpp = db.vpn[vid].admin_jid
+            return adminxmpp
+        else:
+            raise HTTP(404,'Could not find vpn with the client jid')
 
 #handles multiple ejabberd node insert and response
 def register_relationships():
@@ -395,17 +405,18 @@ def log():
 
 def set():
     vars = request.get_vars
+    vid = db(db.vpn.vpn_name == vars['vpnname']).select()[0].id
     if(vars['type'] == 'set_public_key'):
-        db(db.xmpnode.jid == vars['xmppid']).update(public_key=vars['public_key'])
+        db((db.xmpnode.jid == vars['xmppid'])&(db.xmpnode.vpn_id == vid)).update(public_key=vars['public_key'])
     elif(vars['type'] == 'change_status'):
         heartbeat.set_port_no(request.env.server_port)
         if vars['status'] == 'running':
-            heartbeat.beat(vars['xmppid'])
+            heartbeat.beat(vars['xmppid'], vars['vpnname'])
         elif vars['status'] == 'stopped':
             heartbeat.kill(vars['xmppid'])
-        db(db.xmpnode.jid == vars['xmppid']).update(status=vars['status'])
+        db((db.xmpnode.jid == vars['xmppid'])&(db.xmpnode.vpn_id == vid)).update(status=vars['status'])
     elif(vars['type'] == 'change_ip'):
-        db(db.xmpnode.jid == vars['xmppid']).update(ip=vars['ip'])
+        db((db.xmpnode.jid == vars['xmppid'])&(db.xmpnode.vpn_id == vid)).update(ip=vars['ip'])
 
 def sendtoclient():
     vars = request.get_vars
